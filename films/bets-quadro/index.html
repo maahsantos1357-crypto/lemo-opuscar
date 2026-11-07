@@ -1,0 +1,163 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Quem ganha com as bets?</title><style>
+@font-face{font-family:'AD';src:url(fonts/ArchitectsDaughter.woff2) format('woff2');font-display:block}
+html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script type="module">
+// "Quem ganha com as bets?" — quadro branco vertical, uma lousa, sem mãos, sem música.
+import * as W from './engine/wb.js';
+import { clamp, lerp, TAU, mulberry } from '/core/lib.js';
+const SW = 1080, SH = 1920;
+await W.loadFont('tech', 'fonts/EMSTech.json');
+await document.fonts.load('56px AD', 'ÁÉÍÓÚÃÕÇáéíóúãõç?!');
+const WORDS = await (await fetch('voice/words.json')).json();
+const VO = 0.8;                                       // a narração entra aqui
+const nrm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '');
+const at = (w, k = 0, end = false) => { let n = 0; for (const x of WORDS) if (nrm(x[0]) === nrm(w) && n++ === k) return VO + (end ? x[2] : x[1]); throw new Error('word ' + w); };
+const END = VO + WORDS[WORDS.length - 1][2] + 3.4;
+
+const { INK } = W;
+const tl = new W.Timeline();
+const K = new W.Pen('black', INK.black, { park: [1250, 2100] });
+const G = new W.Pen('green', INK.green, { park: [-200, 2050] });
+const R = new W.Pen('red', '#c8363a', { park: [1300, 1500] });
+const T = W.text, D = (pen, shapes, a, b, o = {}) => tl.draw(pen, shapes, a, { by: b, ...o });
+const BW = 1400, BH = 4000;
+
+// fantasmas de aulas antigas
+const ghosts = [], gR = mulberry(31);
+for (let i = 0; i < 26; i++) {
+  const x = gR() * 1250 + 80, y = gR() * 3850 + 80, k = gR(), o = { w: 10, alpha: .05 + gR() * .05, color: gR() < .3 ? '#8aa0c8' : '#9aa0a8' };
+  if (k < .35) ghosts.push(...T(['x = 2', 'lista', 'SEG', '10%', 'ok!', 'prova', '3 + 4', 'juros'][i % 8], x, y, { h: 44 + gR() * 30, ...o }));
+  else if (k < .6) ghosts.push(W.circle(x, y, 30 + gR() * 80, o));
+  else if (k < .8) ghosts.push(...W.arrow(x, y, x + (gR() - .5) * 400, y + (gR() - .5) * 260, o));
+  else ghosts.push(W.line(x, y, x + 150 + gR() * 300, y + (gR() - .5) * 60, o));
+}
+
+// boneco de palitinho
+function stick(x, y, s, o = {}) {           // (x,y) = pés; s = altura
+  const h = s, r = h * .13, w = o.w ?? 9, sh = [];
+  sh.push(W.circle(x, y - h + r, r, { w }));
+  sh.push(W.line(x, y - h + 2 * r, x, y - h * .38, { w }));
+  sh.push(W.line(x, y - h * .38, x - h * .17, y, { w }), W.line(x, y - h * .38, x + h * .17, y, { w }));
+  if (o.arms === 'up') sh.push(W.line(x - h * .25, y - h * .9, x, y - h * .68, { w }), W.line(x, y - h * .68, x + h * .25, y - h * .9, { w }));
+  else sh.push(W.line(x - h * .24, y - h * .44, x, y - h * .7, { w }), W.line(x, y - h * .7, x + h * .24, y - h * .44, { w }));
+  return sh;
+}
+
+// ───────── A · a pergunta (0–3,3)
+const tA = at('afinal'), tQ = at('quem'), tG = at('ganha'), tBe = at('bets', 0, true);
+D(K, T('AFINAL,', 700, 330, { h: 88, align: 'center' }), tA - .25, tQ - .05);
+D(K, T('QUEM REALMENTE', 700, 480, { h: 88, align: 'center' }), tQ - .05, tG + .05);
+D(K, T('GANHA COM AS', 700, 630, { h: 88, align: 'center' }), tG + .05, at('as') + .1);
+D(R, T('BETS?', 700, 850, { h: 130, align: 'center' }), at('as') - .05, tBe + .2);
+D(R, [W.curve([[470, 885], [700, 905], [930, 880]], { w: 12 }), W.curve([[500, 915], [700, 930], [900, 912]], { w: 9 })], tBe + .2, tBe + .55);
+
+// ───────── B · não é você (3,3–5)
+const tN = at('nao'), tV = at('voce', 0, true);
+D(K, [...stick(470, 1440, 380)], tN - .3, tV + .05);
+// bolsos virados do avesso
+D(K, [W.poly([[400, 1250], [380, 1300], [420, 1300], [400, 1250]], { w: 7 }), W.poly([[540, 1250], [520, 1300], [560, 1300], [540, 1250]], { w: 7 })], tV + .05, tV + .3);
+D(R, T('NÃO É', 980, 1190, { h: 95, align: 'center' }), tN - .1, at('e') + .1);
+D(R, T('VOCÊ', 980, 1340, { h: 110, align: 'center' }), at('voce') - .05, tV + .25);
+D(R, [W.line(800, 1380, 1160, 1150, { w: 12 })], tV + .3, tV + .5);
+
+// ───────── C · o dono da casa no topo da pirâmide (5–6)
+const APX = [700, 2010], BASEY = 3500, BL = 110, BR = 1290;
+const tDono = at('dono'), tCasa = at('casa', 0, true);
+D(K, [...stick(700, 1995, 300, { arms: 'up' }), W.rect(655, 1668, 90, 50, { w: 8 }), W.line(625, 1720, 775, 1718, { w: 9 })], at('e', 1) - .2, tCasa);   // de cartola
+D(R, T('DONO DA CASA', 700, 1610, { h: 66, align: 'center' }), tDono - .05, tCasa + .3);
+
+// ───────── D · a pirâmide e cada aposta subindo (6–9)
+const tCada = at('cada'), tTopo = at('topo', 0, true);
+D(K, [W.line(APX[0], APX[1], BR, BASEY, { w: 11 }), W.line(BR, BASEY, BL, BASEY, { w: 11 }), W.line(BL, BASEY, APX[0], APX[1], { w: 11 })], tCada - .1, at('perdida') + .2);
+D(K, [W.line(470, 2500, 930, 2500, { w: 6, alpha: .6 }), W.line(300, 3000, 1100, 3000, { w: 6, alpha: .6 })], at('perdida') + .2, at('sobe'));
+const BASE_P = [[220, 3780], [380, 3790], [540, 3775], [700, 3795], [860, 3780], [1020, 3790], [1180, 3778]];
+D(K, BASE_P.flatMap(([x, y]) => stick(x, y, 190, { w: 7 })), at('sobe') - .1, tTopo + .3);
+D(G, [...W.arrow(1250, 3300, 950, 2200, { w: 11 }), ...T('$', 1210, 2750, { h: 110 })], at('perdida'), at('pro'));
+
+// ───────── E · o rico fica cada vez mais rico (9–10,6)
+const tRico = at('rico'), tRico2 = at('rico', 1, true);
+const bag = (cx, cy, r, w) => [W.circle(cx, cy, r, { w }), W.line(cx - r * .45, cy - r * .9, cx + r * .45, cy - r * .9, { w }), ...T('$', cx - r * .32, cy + r * .4, { h: r * 1.1, w: w * .9 })];
+D(G, bag(380, 1890, 85, 10), tRico - .1, at('vez'));
+D(G, [W.circle(380, 1890, 125, { w: 8, alpha: .8 }), W.circle(380, 1890, 165, { w: 7, alpha: .6 }), ...T('+', 190, 1720, { h: 80 }), ...T('+', 540, 1700, { h: 70 })], at('mais'), tRico2 + .15);
+
+// ───────── F · com o dinheiro de quem tem menos (10,6–11,8)
+const tDin = at('dinheiro'), tMen = at('menos', 0, true);
+D(K, T('QUEM TEM MENOS', 700, 3970, { h: 80, align: 'center' }), at('quem', 1) - .2, tMen + .15);
+D(G, [W.curve([[150, 3850], [100, 3650], [130, 3530]], { w: 8 }), ...W.arrow(130, 3580, 160, 3430, { w: 8 })], tDin - .1, at('de') + .2);
+
+// ───────── G · a casa sempre ganha (12–16)
+const tAc = at('a', 0), tGan = at('ganha', 1, true);
+D(R, T('A CASA SEMPRE GANHA', 700, 4160, { h: 88, align: 'center' }), tAc - .05, tGan + .35);
+D(R, [W.roundRect(150, 4060, 1100, 150, 70, { w: 10 }), W.roundRect(130, 4050, 1140, 170, 80, { w: 8, alpha: .75 })], tGan + .5, tGan + 1.4);
+tl.cue(tGan + 1.9, 'capOn');
+const COINS = [0, .45, .9].map(d => at('cada') + .5 + d);
+COINS.forEach(t => { tl.cue(t, 'magnet'); tl.cue(t + .85, 'magnet', { big: 1 }); });
+tl.end();
+
+// ───────── câmera
+const cam = new W.Camera([
+  [0, 700, 640, .8], [VO + 2.25, 700, 640, .8],
+  [VO + 2.75, 720, 1240, .85], [VO + 3.35, 720, 1240, .85],
+  [VO + 3.9, 700, 1850, .9], [VO + 4.8, 700, 1850, .9],
+  [VO + 5.7, 700, 2850, .56], [VO + 7.1, 700, 2850, .56],
+  [VO + 7.55, 560, 1880, .9], [VO + 8.9, 560, 1880, .9],
+  [VO + 9.45, 700, 3700, .8], [VO + 10.6, 700, 3700, .8],
+  [VO + 11.6, 700, 2960, .56], [END, 700, 2940, .575],
+]);
+
+// ───────── ímãs-moeda: sobem da base ao topo
+function coinPos(t0, t) {
+  const u = clamp((t - t0) / .85); if (t < t0 - .25) return null;
+  const a = [300 + (t0 * 97 % 1) * 700, 3400], b = [520, 2000];
+  const e = u * u * (3 - 2 * u), lift = t < t0 ? (t0 - t) / .25 : Math.sin(Math.PI * u) * .6;
+  return { x: lerp(a[0], b[0], e), y: lerp(a[1], b[1], e) - (u >= 1 ? 0 : 0), lift, done: u >= 1 };
+}
+function drawCoin(ctx, p, c) {
+  const [sx, sy] = W.toScreen(c, p.x, p.y), s = c.z, up = p.lift * 36 * s, r = 46 * s;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.save(); ctx.filter = `blur(${(5 + p.lift * 12) * s}px)`; ctx.fillStyle = `rgba(40,40,30,${.35 - p.lift * .15})`;
+  ctx.beginPath(); ctx.arc(sx + 7 * s + up * .5, sy + 10 * s + up * .6, r, 0, TAU); ctx.fill(); ctx.restore();
+  const g = ctx.createRadialGradient(sx - r * .35, sy - up - r * .4, r * .1, sx, sy - up, r);
+  g.addColorStop(0, '#9be0b4'); g.addColorStop(.5, '#2e8b57'); g.addColorStop(1, '#1d5c39');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx, sy - up, r * (1 + p.lift * .06), 0, TAU); ctx.fill();
+  ctx.fillStyle = '#f3fff6'; ctx.font = `bold ${r * 1.15}px AD`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('$', sx, sy - up + r * .05);
+  ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.beginPath(); ctx.ellipse(sx - r * .4, sy - up - r * .45, r * .25, r * .12, -.6, 0, TAU); ctx.fill();
+}
+const board = new W.Board(tl, { ghosts, W: 2000, H: 5600, X0: -300, Y0: -700 });
+board.objs.push({ draw: (ctx, t, c) => { COINS.forEach((t0, i) => { const p = coinPos(t0, t); if (p) drawCoin(ctx, { ...p, x: p.done ? 470 + i * 50 : p.x, y: p.done ? 2000 - i * 10 : p.y }, c); }); } });
+board.objs.push({ draw: (ctx, t, c) => { for (const p of [K, G, R]) W.drawMarker(ctx, p, W.penPose(p, t, cam), c, t); } });
+
+// ───────── legendas
+const subs = [], cut = /[,.?!]$/;
+let cur = [];
+WORDS.forEach((w, i) => { cur.push(w); const txt = cur.map(x => x[0]).join(' '); if (i === WORDS.length - 1 || (cut.test(w[0]) && txt.length > 9) || txt.length > 26) { subs.push({ t0: VO + cur[0][1] - .05, t1: VO + w[2] + .3, text: txt }); cur = []; } });
+const FIX = { 'quem realmente ganha com as bets?': 'quem realmente ganha com as bets?' };
+for (let i = 0; i < subs.length - 1; i++) subs[i].t1 = Math.min(Math.max(subs[i].t1, subs[i].t0 + 1.0), subs[i + 1].t0 - .03);
+window.SUBS = subs;
+board.overlays.push({ draw: (ctx, t) => {
+  const s = subs.find(s => t >= s.t0 && t < s.t1); if (!s) return;
+  const a = Math.min(1, (t - s.t0) / .1, (s.t1 - t) / .1); ctx.font = '58px AD';
+  const w = ctx.measureText(s.text).width + 70, h = 92, y0 = 1700;
+  ctx.globalAlpha = a * .92; ctx.fillStyle = '#fdfcf8'; ctx.shadowColor = 'rgba(30,30,40,.2)'; ctx.shadowBlur = 20; ctx.shadowOffsetY = 5;
+  ctx.beginPath(); ctx.roundRect(SW / 2 - w / 2, y0, w, h, 18); ctx.fill(); ctx.shadowColor = 'transparent'; ctx.globalAlpha = a;
+  ctx.fillStyle = '#c8363a'; ctx.fillRect(SW / 2 - w / 2 + 24, y0 + h - 14, 40, 5);
+  ctx.fillStyle = '#23262c'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(s.text, SW / 2, y0 + h / 2 + 3);
+} });
+
+// ───────── render com desfoque de movimento nas viradas de câmera
+const off = new OffscreenCanvas(SW, SH), oc = off.getContext('2d'), ctx = document.getElementById('c').getContext('2d');
+function render(t) {
+  const dt = 1 / 24, a = cam.at(t), b = cam.at(Math.max(0, t - dt));
+  const sp = Math.hypot((a.x - b.x) * a.z, (a.y - b.y) * a.z) + Math.abs(Math.log(a.z / b.z)) * 900;
+  const N = sp > 14 ? Math.min(10, Math.ceil(sp * .5 / 4)) : 1;
+  if (N === 1) { board.render(ctx, t, cam); return; }
+  const ov = board.overlays; board.overlays = [];
+  for (let i = 0; i < N; i++) { board.render(oc, t - dt * .5 * i / (N - 1), cam); ctx.globalAlpha = 1 / (i + 1); ctx.drawImage(off, 0, 0); }
+  ctx.globalAlpha = 1; board.overlays = ov; for (const o of ov) { ctx.save(); o.draw(ctx, t); ctx.restore(); }
+}
+const ev = [...tl.ev, { t: VO, type: 'vo' }];
+for (const e of ev) if (e.x != null) { const c = cam.at(e.t), [px, py] = W.toScreen(c, e.x, e.y); e.pan = +clamp((px - 540) / 900, -.7, .7).toFixed(2); e.z = +c.z.toFixed(2); e.on = px > -100 && px < 1180 && py > -100 && py < 2020 ? 1 : 0; }
+ev.sort((a, b) => a.t - b.t);
+window.DUR = +END.toFixed(2); window.EV = ev; window.render = render; window.READY = true;
+</script></body></html>
