@@ -1,0 +1,13 @@
+A Casa Sempre Ganha — créditos de terceiros
+
+Narração: ElevenLabs (modelo eleven_turbo_v2_5), voz "Leonardo - Deep & Resonant" da Voice Library, gerada na conta do usuário. Uso conforme os termos da ElevenLabs.
+Fontes (SIL Open Font License 1.1, via Fontsource / Google Fonts):
+  Alfa Slab One — JM Solé
+  Bagel Fat One — Kyungwon Kim, JAMO
+  Archivo Black — Omnibus-Type
+  JetBrains Mono — JetBrains
+Efeitos sonoros: sintetizados em código (core/audio/sfx.py e mix.py). Sem música.
+Transcrição/alinhamento: faster-whisper (MIT), modelo Whisper "small" (MIT, OpenAI).
+Dados citados: Banco Central do Brasil, Estudo Especial nº 119/2024 ("Análise técnica sobre o mercado de apostas online no Brasil e o perfil dos apostadores"), set. 2024 — ~24 milhões de pessoas fizeram apostas; ~5 milhões de beneficiários do Bolsa Família enviaram ~R$ 3 bilhões às bets via Pix em agosto de 2024.
+Marcas: "BET★" é uma marca fictícia; nenhuma casa de apostas, clube ou emissora real é mostrada.
+Ajuda: CVV — Centro de Valorização da Vida, ligação gratuita 188, 24 h.

@@ -1,0 +1,1796 @@
+{
+ "dur": 128.43,
+ "voice": true,
+ "lines": [
+  {
+   "id": "L1",
+   "t0": 1.0,
+   "t1": 5.62,
+   "text": "Uma notificação. Bônus de 50 reais. Aposte agora.",
+   "key": [
+    "50 reais"
+   ]
+  },
+  {
+   "id": "L2",
+   "t0": 7.32,
+   "t1": 12.7,
+   "text": "Este é o arquivo de um esquema que cabe no bolso de milhões de brasileiros: as bets.",
+   "key": [
+    "esquema",
+    "bets"
+   ]
+  },
+  {
+   "id": "L3",
+   "t0": 13.3,
+   "t1": 23.32,
+   "text": "Prova número um: a isca. Bônus de boas-vindas, propaganda na camisa do seu time, e influenciadores mostrando ganhos que você nunca vê de perto.",
+   "key": [
+    "isca",
+    "influenciadores"
+   ]
+  },
+  {
+   "id": "L4",
+   "t0": 23.92,
+   "t1": 35.66,
+   "text": "Prova número dois: a matemática. Em cada aposta, a casa embute uma margem. Nos cassinos online, as máquinas são programadas para devolver menos do que recebem.",
+   "key": [
+    "margem",
+    "menos"
+   ]
+  },
+  {
+   "id": "L5",
+   "t0": 36.36,
+   "t1": 44.22,
+   "text": "Você pode até ganhar uma vez. Mas quanto mais joga, mais perto chega da conta final: a casa sempre ganha.",
+   "key": [
+    "a casa sempre ganha"
+   ]
+  },
+  {
+   "id": "L6",
+   "t0": 44.82,
+   "t1": 54.24,
+   "text": "Prova número três: as vítimas. Segundo o Banco Central, cerca de 24 milhões de brasileiros apostaram em 2024.",
+   "key": [
+    "24 milhões"
+   ]
+  },
+  {
+   "id": "L7",
+   "t0": 54.69,
+   "t1": 63.61,
+   "text": "Só em agosto daquele ano, beneficiários do Bolsa Família enviaram 3 bilhões de reais às bets, via Pix.",
+   "key": [
+    "3 bilhões"
+   ]
+  },
+  {
+   "id": "L8",
+   "t0": 64.51,
+   "t1": 74.07,
+   "text": "Prova número quatro: os danos. Dívidas. Nome sujo. Ansiedade. Vício. O dinheiro do aluguel e do mercado virando aposta.",
+   "key": [
+    "danos",
+    "aluguel",
+    "mercado"
+   ]
+  },
+  {
+   "id": "L9",
+   "t0": 75.57,
+   "t1": 79.39,
+   "text": "Agora, a pergunta que importa: quem realmente lucra?",
+   "key": [
+    "quem realmente lucra?"
+   ]
+  },
+  {
+   "id": "L10",
+   "t0": 80.89,
+   "t1": 88.71,
+   "text": "As operadoras, muitas ligadas a grupos estrangeiros, ficam com a diferença entre o que entra e o que sai.",
+   "key": [
+    "operadoras",
+    "diferença"
+   ]
+  },
+  {
+   "id": "L11",
+   "t0": 89.26,
+   "t1": 97.56,
+   "text": "Alguns influenciadores ganham comissão sobre o quanto seus seguidores perdem. Quanto mais você perde, mais eles ganham.",
+   "key": [
+    "comissão",
+    "perdem"
+   ]
+  },
+  {
+   "id": "L12",
+   "t0": 98.11,
+   "t1": 104.47,
+   "text": "Clubes e emissoras recebem milhões em patrocínio. E o apostador? Fica com o prejuízo.",
+   "key": [
+    "patrocínio",
+    "prejuízo"
+   ]
+  },
+  {
+   "id": "L13",
+   "t0": 106.77,
+   "t1": 113.13,
+   "text": "O veredito: não é sorte. É um modelo de negócio. E ele foi desenhado para você perder.",
+   "key": [
+    "modelo de negócio",
+    "perder"
+   ]
+  },
+  {
+   "id": "L14",
+   "t0": 116.53,
+   "t1": 124.43,
+   "text": "Se o jogo deixou de ser diversão, procure ajuda. O CVV atende de graça, pelo 188.",
+   "key": [
+    "procure ajuda",
+    "188"
+   ]
+  }
+ ],
+ "words": [
+  {
+   "w": "Uma",
+   "t0": 1.0,
+   "t1": 1.18,
+   "line": "L1"
+  },
+  {
+   "w": "notificação.",
+   "t0": 1.18,
+   "t1": 1.96,
+   "line": "L1"
+  },
+  {
+   "w": "Bônus",
+   "t0": 2.56,
+   "t1": 3.1,
+   "line": "L1"
+  },
+  {
+   "w": "de",
+   "t0": 3.1,
+   "t1": 3.24,
+   "line": "L1"
+  },
+  {
+   "w": "50",
+   "t0": 3.7,
+   "t1": 3.7,
+   "line": "L1"
+  },
+  {
+   "w": "reais.",
+   "t0": 4.56,
+   "t1": 4.9,
+   "line": "L1"
+  },
+  {
+   "w": "Aposte",
+   "t0": 4.9,
+   "t1": 5.24,
+   "line": "L1"
+  },
+  {
+   "w": "agora.",
+   "t0": 5.24,
+   "t1": 5.62,
+   "line": "L1"
+  },
+  {
+   "w": "Este",
+   "t0": 7.32,
+   "t1": 7.54,
+   "line": "L2"
+  },
+  {
+   "w": "é",
+   "t0": 7.54,
+   "t1": 7.66,
+   "line": "L2"
+  },
+  {
+   "w": "o",
+   "t0": 7.66,
+   "t1": 7.72,
+   "line": "L2"
+  },
+  {
+   "w": "arquivo",
+   "t0": 7.72,
+   "t1": 8.16,
+   "line": "L2"
+  },
+  {
+   "w": "de",
+   "t0": 8.16,
+   "t1": 8.34,
+   "line": "L2"
+  },
+  {
+   "w": "um",
+   "t0": 8.34,
+   "t1": 8.44,
+   "line": "L2"
+  },
+  {
+   "w": "esquema",
+   "t0": 8.44,
+   "t1": 8.88,
+   "line": "L2"
+  },
+  {
+   "w": "que",
+   "t0": 8.88,
+   "t1": 9.08,
+   "line": "L2"
+  },
+  {
+   "w": "cabe",
+   "t0": 9.08,
+   "t1": 9.42,
+   "line": "L2"
+  },
+  {
+   "w": "no",
+   "t0": 9.42,
+   "t1": 9.64,
+   "line": "L2"
+  },
+  {
+   "w": "bolso",
+   "t0": 9.64,
+   "t1": 10.1,
+   "line": "L2"
+  },
+  {
+   "w": "de",
+   "t0": 10.1,
+   "t1": 10.28,
+   "line": "L2"
+  },
+  {
+   "w": "milhões",
+   "t0": 10.28,
+   "t1": 10.66,
+   "line": "L2"
+  },
+  {
+   "w": "de",
+   "t0": 10.66,
+   "t1": 10.9,
+   "line": "L2"
+  },
+  {
+   "w": "brasileiros:",
+   "t0": 10.9,
+   "t1": 11.6,
+   "line": "L2"
+  },
+  {
+   "w": "as",
+   "t0": 12.2,
+   "t1": 12.44,
+   "line": "L2"
+  },
+  {
+   "w": "bets.",
+   "t0": 12.44,
+   "t1": 12.7,
+   "line": "L2"
+  },
+  {
+   "w": "Prova",
+   "t0": 13.3,
+   "t1": 13.68,
+   "line": "L3"
+  },
+  {
+   "w": "número",
+   "t0": 13.68,
+   "t1": 13.86,
+   "line": "L3"
+  },
+  {
+   "w": "um:",
+   "t0": 13.86,
+   "t1": 14.22,
+   "line": "L3"
+  },
+  {
+   "w": "a",
+   "t0": 14.48,
+   "t1": 14.62,
+   "line": "L3"
+  },
+  {
+   "w": "isca.",
+   "t0": 14.62,
+   "t1": 15.0,
+   "line": "L3"
+  },
+  {
+   "w": "Bônus",
+   "t0": 15.48,
+   "t1": 16.04,
+   "line": "L3"
+  },
+  {
+   "w": "de",
+   "t0": 16.04,
+   "t1": 16.22,
+   "line": "L3"
+  },
+  {
+   "w": "boas-vindas,",
+   "t0": 16.22,
+   "t1": 16.98,
+   "line": "L3"
+  },
+  {
+   "w": "propaganda",
+   "t0": 17.3,
+   "t1": 17.72,
+   "line": "L3"
+  },
+  {
+   "w": "na",
+   "t0": 17.72,
+   "t1": 18.04,
+   "line": "L3"
+  },
+  {
+   "w": "camisa",
+   "t0": 18.04,
+   "t1": 18.5,
+   "line": "L3"
+  },
+  {
+   "w": "do",
+   "t0": 18.5,
+   "t1": 18.7,
+   "line": "L3"
+  },
+  {
+   "w": "seu",
+   "t0": 18.7,
+   "t1": 18.86,
+   "line": "L3"
+  },
+  {
+   "w": "time,",
+   "t0": 18.86,
+   "t1": 19.24,
+   "line": "L3"
+  },
+  {
+   "w": "e",
+   "t0": 19.66,
+   "t1": 19.88,
+   "line": "L3"
+  },
+  {
+   "w": "influenciadores",
+   "t0": 19.88,
+   "t1": 20.76,
+   "line": "L3"
+  },
+  {
+   "w": "mostrando",
+   "t0": 20.76,
+   "t1": 21.36,
+   "line": "L3"
+  },
+  {
+   "w": "ganhos",
+   "t0": 21.36,
+   "t1": 21.86,
+   "line": "L3"
+  },
+  {
+   "w": "que",
+   "t0": 21.86,
+   "t1": 22.0,
+   "line": "L3"
+  },
+  {
+   "w": "você",
+   "t0": 22.0,
+   "t1": 22.26,
+   "line": "L3"
+  },
+  {
+   "w": "nunca",
+   "t0": 22.26,
+   "t1": 22.58,
+   "line": "L3"
+  },
+  {
+   "w": "vê",
+   "t0": 22.58,
+   "t1": 22.86,
+   "line": "L3"
+  },
+  {
+   "w": "de",
+   "t0": 22.86,
+   "t1": 23.0,
+   "line": "L3"
+  },
+  {
+   "w": "perto.",
+   "t0": 23.0,
+   "t1": 23.32,
+   "line": "L3"
+  },
+  {
+   "w": "Prova",
+   "t0": 23.92,
+   "t1": 24.32,
+   "line": "L4"
+  },
+  {
+   "w": "número",
+   "t0": 24.32,
+   "t1": 24.56,
+   "line": "L4"
+  },
+  {
+   "w": "dois:",
+   "t0": 24.56,
+   "t1": 25.08,
+   "line": "L4"
+  },
+  {
+   "w": "a",
+   "t0": 25.56,
+   "t1": 25.62,
+   "line": "L4"
+  },
+  {
+   "w": "matemática.",
+   "t0": 25.62,
+   "t1": 26.26,
+   "line": "L4"
+  },
+  {
+   "w": "Em",
+   "t0": 26.88,
+   "t1": 27.04,
+   "line": "L4"
+  },
+  {
+   "w": "cada",
+   "t0": 27.04,
+   "t1": 27.26,
+   "line": "L4"
+  },
+  {
+   "w": "aposta,",
+   "t0": 27.26,
+   "t1": 27.8,
+   "line": "L4"
+  },
+  {
+   "w": "a",
+   "t0": 28.2,
+   "t1": 28.28,
+   "line": "L4"
+  },
+  {
+   "w": "casa",
+   "t0": 28.28,
+   "t1": 28.56,
+   "line": "L4"
+  },
+  {
+   "w": "embute",
+   "t0": 28.56,
+   "t1": 29.0,
+   "line": "L4"
+  },
+  {
+   "w": "uma",
+   "t0": 29.0,
+   "t1": 29.24,
+   "line": "L4"
+  },
+  {
+   "w": "margem.",
+   "t0": 29.24,
+   "t1": 29.76,
+   "line": "L4"
+  },
+  {
+   "w": "Nos",
+   "t0": 29.76,
+   "t1": 30.38,
+   "line": "L4"
+  },
+  {
+   "w": "cassinos",
+   "t0": 30.38,
+   "t1": 30.92,
+   "line": "L4"
+  },
+  {
+   "w": "online,",
+   "t0": 30.92,
+   "t1": 31.4,
+   "line": "L4"
+  },
+  {
+   "w": "as",
+   "t0": 31.86,
+   "t1": 32.0,
+   "line": "L4"
+  },
+  {
+   "w": "máquinas",
+   "t0": 32.0,
+   "t1": 32.42,
+   "line": "L4"
+  },
+  {
+   "w": "são",
+   "t0": 32.42,
+   "t1": 32.66,
+   "line": "L4"
+  },
+  {
+   "w": "programadas",
+   "t0": 32.66,
+   "t1": 33.38,
+   "line": "L4"
+  },
+  {
+   "w": "para",
+   "t0": 33.38,
+   "t1": 33.74,
+   "line": "L4"
+  },
+  {
+   "w": "devolver",
+   "t0": 33.74,
+   "t1": 34.22,
+   "line": "L4"
+  },
+  {
+   "w": "menos",
+   "t0": 34.22,
+   "t1": 34.74,
+   "line": "L4"
+  },
+  {
+   "w": "do",
+   "t0": 34.74,
+   "t1": 34.92,
+   "line": "L4"
+  },
+  {
+   "w": "que",
+   "t0": 34.92,
+   "t1": 35.06,
+   "line": "L4"
+  },
+  {
+   "w": "recebem.",
+   "t0": 35.06,
+   "t1": 35.66,
+   "line": "L4"
+  },
+  {
+   "w": "Você",
+   "t0": 36.36,
+   "t1": 36.64,
+   "line": "L5"
+  },
+  {
+   "w": "pode",
+   "t0": 36.64,
+   "t1": 36.92,
+   "line": "L5"
+  },
+  {
+   "w": "até",
+   "t0": 36.92,
+   "t1": 37.24,
+   "line": "L5"
+  },
+  {
+   "w": "ganhar",
+   "t0": 37.24,
+   "t1": 37.58,
+   "line": "L5"
+  },
+  {
+   "w": "uma",
+   "t0": 37.58,
+   "t1": 38.04,
+   "line": "L5"
+  },
+  {
+   "w": "vez.",
+   "t0": 38.04,
+   "t1": 38.38,
+   "line": "L5"
+  },
+  {
+   "w": "Mas",
+   "t0": 38.98,
+   "t1": 39.1,
+   "line": "L5"
+  },
+  {
+   "w": "quanto",
+   "t0": 39.1,
+   "t1": 39.32,
+   "line": "L5"
+  },
+  {
+   "w": "mais",
+   "t0": 39.32,
+   "t1": 39.62,
+   "line": "L5"
+  },
+  {
+   "w": "joga,",
+   "t0": 39.62,
+   "t1": 40.1,
+   "line": "L5"
+  },
+  {
+   "w": "mais",
+   "t0": 40.42,
+   "t1": 40.6,
+   "line": "L5"
+  },
+  {
+   "w": "perto",
+   "t0": 40.6,
+   "t1": 41.04,
+   "line": "L5"
+  },
+  {
+   "w": "chega",
+   "t0": 41.04,
+   "t1": 41.42,
+   "line": "L5"
+  },
+  {
+   "w": "da",
+   "t0": 41.42,
+   "t1": 41.62,
+   "line": "L5"
+  },
+  {
+   "w": "conta",
+   "t0": 41.62,
+   "t1": 41.9,
+   "line": "L5"
+  },
+  {
+   "w": "final:",
+   "t0": 41.9,
+   "t1": 42.22,
+   "line": "L5"
+  },
+  {
+   "w": "a",
+   "t0": 42.8,
+   "t1": 42.88,
+   "line": "L5"
+  },
+  {
+   "w": "casa",
+   "t0": 42.88,
+   "t1": 43.28,
+   "line": "L5"
+  },
+  {
+   "w": "sempre",
+   "t0": 43.28,
+   "t1": 43.74,
+   "line": "L5"
+  },
+  {
+   "w": "ganha.",
+   "t0": 43.74,
+   "t1": 44.22,
+   "line": "L5"
+  },
+  {
+   "w": "Prova",
+   "t0": 44.82,
+   "t1": 45.18,
+   "line": "L6"
+  },
+  {
+   "w": "número",
+   "t0": 45.18,
+   "t1": 45.36,
+   "line": "L6"
+  },
+  {
+   "w": "três:",
+   "t0": 45.36,
+   "t1": 45.86,
+   "line": "L6"
+  },
+  {
+   "w": "as",
+   "t0": 46.38,
+   "t1": 46.6,
+   "line": "L6"
+  },
+  {
+   "w": "vítimas.",
+   "t0": 46.6,
+   "t1": 47.0,
+   "line": "L6"
+  },
+  {
+   "w": "Segundo",
+   "t0": 47.68,
+   "t1": 48.1,
+   "line": "L6"
+  },
+  {
+   "w": "o",
+   "t0": 48.1,
+   "t1": 48.26,
+   "line": "L6"
+  },
+  {
+   "w": "Banco",
+   "t0": 48.26,
+   "t1": 48.48,
+   "line": "L6"
+  },
+  {
+   "w": "Central,",
+   "t0": 48.48,
+   "t1": 48.92,
+   "line": "L6"
+  },
+  {
+   "w": "cerca",
+   "t0": 49.44,
+   "t1": 49.62,
+   "line": "L6"
+  },
+  {
+   "w": "de",
+   "t0": 49.62,
+   "t1": 49.84,
+   "line": "L6"
+  },
+  {
+   "w": "24",
+   "t0": 49.84,
+   "t1": 50.42,
+   "line": "L6"
+  },
+  {
+   "w": "milhões",
+   "t0": 50.42,
+   "t1": 50.9,
+   "line": "L6"
+  },
+  {
+   "w": "de",
+   "t0": 50.9,
+   "t1": 51.2,
+   "line": "L6"
+  },
+  {
+   "w": "brasileiros",
+   "t0": 51.2,
+   "t1": 51.84,
+   "line": "L6"
+  },
+  {
+   "w": "apostaram",
+   "t0": 51.84,
+   "t1": 52.74,
+   "line": "L6"
+  },
+  {
+   "w": "em",
+   "t0": 52.74,
+   "t1": 53.06,
+   "line": "L6"
+  },
+  {
+   "w": "2024.",
+   "t0": 53.06,
+   "t1": 54.24,
+   "line": "L6"
+  },
+  {
+   "w": "Só",
+   "t0": 54.69,
+   "t1": 55.23,
+   "line": "L7"
+  },
+  {
+   "w": "em",
+   "t0": 55.23,
+   "t1": 56.03,
+   "line": "L7"
+  },
+  {
+   "w": "agosto",
+   "t0": 56.03,
+   "t1": 56.47,
+   "line": "L7"
+  },
+  {
+   "w": "daquele",
+   "t0": 56.47,
+   "t1": 56.85,
+   "line": "L7"
+  },
+  {
+   "w": "ano,",
+   "t0": 56.85,
+   "t1": 57.17,
+   "line": "L7"
+  },
+  {
+   "w": "beneficiários",
+   "t0": 57.31,
+   "t1": 58.11,
+   "line": "L7"
+  },
+  {
+   "w": "do",
+   "t0": 58.11,
+   "t1": 58.31,
+   "line": "L7"
+  },
+  {
+   "w": "Bolsa",
+   "t0": 58.31,
+   "t1": 58.69,
+   "line": "L7"
+  },
+  {
+   "w": "Família",
+   "t0": 58.69,
+   "t1": 59.25,
+   "line": "L7"
+  },
+  {
+   "w": "enviaram",
+   "t0": 59.25,
+   "t1": 60.15,
+   "line": "L7"
+  },
+  {
+   "w": "3",
+   "t0": 60.55,
+   "t1": 60.55,
+   "line": "L7"
+  },
+  {
+   "w": "bilhões",
+   "t0": 60.55,
+   "t1": 61.07,
+   "line": "L7"
+  },
+  {
+   "w": "de",
+   "t0": 61.07,
+   "t1": 61.42,
+   "line": "L7"
+  },
+  {
+   "w": "reais",
+   "t0": 61.42,
+   "t1": 61.77,
+   "line": "L7"
+  },
+  {
+   "w": "às",
+   "t0": 61.77,
+   "t1": 61.95,
+   "line": "L7"
+  },
+  {
+   "w": "bets,",
+   "t0": 61.95,
+   "t1": 62.25,
+   "line": "L7"
+  },
+  {
+   "w": "via",
+   "t0": 62.25,
+   "t1": 63.03,
+   "line": "L7"
+  },
+  {
+   "w": "Pix.",
+   "t0": 63.03,
+   "t1": 63.61,
+   "line": "L7"
+  },
+  {
+   "w": "Prova",
+   "t0": 64.51,
+   "t1": 64.83,
+   "line": "L8"
+  },
+  {
+   "w": "número",
+   "t0": 64.83,
+   "t1": 65.01,
+   "line": "L8"
+  },
+  {
+   "w": "quatro:",
+   "t0": 65.01,
+   "t1": 65.63,
+   "line": "L8"
+  },
+  {
+   "w": "os",
+   "t0": 66.11,
+   "t1": 66.23,
+   "line": "L8"
+  },
+  {
+   "w": "danos.",
+   "t0": 66.23,
+   "t1": 66.69,
+   "line": "L8"
+  },
+  {
+   "w": "Dívidas.",
+   "t0": 67.17,
+   "t1": 67.65,
+   "line": "L8"
+  },
+  {
+   "w": "Nome",
+   "t0": 68.13,
+   "t1": 68.33,
+   "line": "L8"
+  },
+  {
+   "w": "sujo.",
+   "t0": 68.33,
+   "t1": 68.85,
+   "line": "L8"
+  },
+  {
+   "w": "Ansiedade.",
+   "t0": 69.21,
+   "t1": 69.89,
+   "line": "L8"
+  },
+  {
+   "w": "Vício.",
+   "t0": 70.43,
+   "t1": 70.83,
+   "line": "L8"
+  },
+  {
+   "w": "O",
+   "t0": 71.29,
+   "t1": 71.35,
+   "line": "L8"
+  },
+  {
+   "w": "dinheiro",
+   "t0": 71.35,
+   "t1": 71.61,
+   "line": "L8"
+  },
+  {
+   "w": "do",
+   "t0": 71.61,
+   "t1": 71.87,
+   "line": "L8"
+  },
+  {
+   "w": "aluguel",
+   "t0": 71.87,
+   "t1": 72.23,
+   "line": "L8"
+  },
+  {
+   "w": "e",
+   "t0": 72.23,
+   "t1": 72.51,
+   "line": "L8"
+  },
+  {
+   "w": "do",
+   "t0": 72.51,
+   "t1": 72.59,
+   "line": "L8"
+  },
+  {
+   "w": "mercado",
+   "t0": 72.59,
+   "t1": 73.07,
+   "line": "L8"
+  },
+  {
+   "w": "virando",
+   "t0": 73.07,
+   "t1": 73.57,
+   "line": "L8"
+  },
+  {
+   "w": "aposta.",
+   "t0": 73.57,
+   "t1": 74.07,
+   "line": "L8"
+  },
+  {
+   "w": "Agora,",
+   "t0": 75.57,
+   "t1": 76.25,
+   "line": "L9"
+  },
+  {
+   "w": "a",
+   "t0": 76.63,
+   "t1": 76.65,
+   "line": "L9"
+  },
+  {
+   "w": "pergunta",
+   "t0": 76.65,
+   "t1": 76.95,
+   "line": "L9"
+  },
+  {
+   "w": "que",
+   "t0": 76.95,
+   "t1": 77.25,
+   "line": "L9"
+  },
+  {
+   "w": "importa:",
+   "t0": 77.25,
+   "t1": 77.57,
+   "line": "L9"
+  },
+  {
+   "w": "quem",
+   "t0": 78.27,
+   "t1": 78.37,
+   "line": "L9"
+  },
+  {
+   "w": "realmente",
+   "t0": 78.37,
+   "t1": 78.89,
+   "line": "L9"
+  },
+  {
+   "w": "lucra?",
+   "t0": 78.89,
+   "t1": 79.39,
+   "line": "L9"
+  },
+  {
+   "w": "As",
+   "t0": 80.89,
+   "t1": 81.69,
+   "line": "L10"
+  },
+  {
+   "w": "operadoras,",
+   "t0": 81.69,
+   "t1": 82.47,
+   "line": "L10"
+  },
+  {
+   "w": "muitas",
+   "t0": 82.69,
+   "t1": 83.01,
+   "line": "L10"
+  },
+  {
+   "w": "ligadas",
+   "t0": 83.01,
+   "t1": 83.65,
+   "line": "L10"
+  },
+  {
+   "w": "a",
+   "t0": 83.65,
+   "t1": 83.93,
+   "line": "L10"
+  },
+  {
+   "w": "grupos",
+   "t0": 83.93,
+   "t1": 84.25,
+   "line": "L10"
+  },
+  {
+   "w": "estrangeiros,",
+   "t0": 84.25,
+   "t1": 85.13,
+   "line": "L10"
+  },
+  {
+   "w": "ficam",
+   "t0": 85.53,
+   "t1": 85.89,
+   "line": "L10"
+  },
+  {
+   "w": "com",
+   "t0": 85.89,
+   "t1": 86.07,
+   "line": "L10"
+  },
+  {
+   "w": "a",
+   "t0": 86.07,
+   "t1": 86.17,
+   "line": "L10"
+  },
+  {
+   "w": "diferença",
+   "t0": 86.17,
+   "t1": 86.67,
+   "line": "L10"
+  },
+  {
+   "w": "entre",
+   "t0": 86.67,
+   "t1": 87.21,
+   "line": "L10"
+  },
+  {
+   "w": "o",
+   "t0": 87.21,
+   "t1": 87.35,
+   "line": "L10"
+  },
+  {
+   "w": "que",
+   "t0": 87.35,
+   "t1": 87.51,
+   "line": "L10"
+  },
+  {
+   "w": "entra",
+   "t0": 87.51,
+   "t1": 87.83,
+   "line": "L10"
+  },
+  {
+   "w": "e",
+   "t0": 87.83,
+   "t1": 88.21,
+   "line": "L10"
+  },
+  {
+   "w": "o",
+   "t0": 88.21,
+   "t1": 88.31,
+   "line": "L10"
+  },
+  {
+   "w": "que",
+   "t0": 88.31,
+   "t1": 88.41,
+   "line": "L10"
+  },
+  {
+   "w": "sai.",
+   "t0": 88.41,
+   "t1": 88.71,
+   "line": "L10"
+  },
+  {
+   "w": "Alguns",
+   "t0": 89.26,
+   "t1": 89.74,
+   "line": "L11"
+  },
+  {
+   "w": "influenciadores",
+   "t0": 89.74,
+   "t1": 90.5,
+   "line": "L11"
+  },
+  {
+   "w": "ganham",
+   "t0": 90.5,
+   "t1": 91.02,
+   "line": "L11"
+  },
+  {
+   "w": "comissão",
+   "t0": 91.02,
+   "t1": 91.7,
+   "line": "L11"
+  },
+  {
+   "w": "sobre",
+   "t0": 91.7,
+   "t1": 92.32,
+   "line": "L11"
+  },
+  {
+   "w": "o",
+   "t0": 92.32,
+   "t1": 92.4,
+   "line": "L11"
+  },
+  {
+   "w": "quanto",
+   "t0": 92.4,
+   "t1": 92.8,
+   "line": "L11"
+  },
+  {
+   "w": "seus",
+   "t0": 92.8,
+   "t1": 93.12,
+   "line": "L11"
+  },
+  {
+   "w": "seguidores",
+   "t0": 93.12,
+   "t1": 93.72,
+   "line": "L11"
+  },
+  {
+   "w": "perdem.",
+   "t0": 93.72,
+   "t1": 94.34,
+   "line": "L11"
+  },
+  {
+   "w": "Quanto",
+   "t0": 94.86,
+   "t1": 95.04,
+   "line": "L11"
+  },
+  {
+   "w": "mais",
+   "t0": 95.04,
+   "t1": 95.34,
+   "line": "L11"
+  },
+  {
+   "w": "você",
+   "t0": 95.34,
+   "t1": 95.6,
+   "line": "L11"
+  },
+  {
+   "w": "perde,",
+   "t0": 95.6,
+   "t1": 96.04,
+   "line": "L11"
+  },
+  {
+   "w": "mais",
+   "t0": 96.34,
+   "t1": 96.82,
+   "line": "L11"
+  },
+  {
+   "w": "eles",
+   "t0": 96.82,
+   "t1": 97.06,
+   "line": "L11"
+  },
+  {
+   "w": "ganham.",
+   "t0": 97.06,
+   "t1": 97.56,
+   "line": "L11"
+  },
+  {
+   "w": "Clubes",
+   "t0": 98.11,
+   "t1": 98.53,
+   "line": "L12"
+  },
+  {
+   "w": "e",
+   "t0": 98.53,
+   "t1": 98.63,
+   "line": "L12"
+  },
+  {
+   "w": "emissoras",
+   "t0": 98.63,
+   "t1": 99.17,
+   "line": "L12"
+  },
+  {
+   "w": "recebem",
+   "t0": 99.17,
+   "t1": 99.93,
+   "line": "L12"
+  },
+  {
+   "w": "milhões",
+   "t0": 99.93,
+   "t1": 100.39,
+   "line": "L12"
+  },
+  {
+   "w": "em",
+   "t0": 100.39,
+   "t1": 100.67,
+   "line": "L12"
+  },
+  {
+   "w": "patrocínio.",
+   "t0": 100.67,
+   "t1": 101.43,
+   "line": "L12"
+  },
+  {
+   "w": "E",
+   "t0": 101.75,
+   "t1": 101.91,
+   "line": "L12"
+  },
+  {
+   "w": "o",
+   "t0": 101.91,
+   "t1": 101.97,
+   "line": "L12"
+  },
+  {
+   "w": "apostador?",
+   "t0": 101.97,
+   "t1": 102.59,
+   "line": "L12"
+  },
+  {
+   "w": "Fica",
+   "t0": 102.59,
+   "t1": 103.39,
+   "line": "L12"
+  },
+  {
+   "w": "com",
+   "t0": 103.39,
+   "t1": 103.69,
+   "line": "L12"
+  },
+  {
+   "w": "o",
+   "t0": 103.69,
+   "t1": 103.83,
+   "line": "L12"
+  },
+  {
+   "w": "prejuízo.",
+   "t0": 103.83,
+   "t1": 104.47,
+   "line": "L12"
+  },
+  {
+   "w": "O",
+   "t0": 106.77,
+   "t1": 107.37,
+   "line": "L13"
+  },
+  {
+   "w": "veredito:",
+   "t0": 107.37,
+   "t1": 107.95,
+   "line": "L13"
+  },
+  {
+   "w": "não",
+   "t0": 107.95,
+   "t1": 108.33,
+   "line": "L13"
+  },
+  {
+   "w": "é",
+   "t0": 108.33,
+   "t1": 108.47,
+   "line": "L13"
+  },
+  {
+   "w": "sorte.",
+   "t0": 108.47,
+   "t1": 108.91,
+   "line": "L13"
+  },
+  {
+   "w": "É",
+   "t0": 109.41,
+   "t1": 109.55,
+   "line": "L13"
+  },
+  {
+   "w": "um",
+   "t0": 109.55,
+   "t1": 109.65,
+   "line": "L13"
+  },
+  {
+   "w": "modelo",
+   "t0": 109.65,
+   "t1": 109.97,
+   "line": "L13"
+  },
+  {
+   "w": "de",
+   "t0": 109.97,
+   "t1": 110.15,
+   "line": "L13"
+  },
+  {
+   "w": "negócio.",
+   "t0": 110.15,
+   "t1": 110.67,
+   "line": "L13"
+  },
+  {
+   "w": "E",
+   "t0": 111.09,
+   "t1": 111.25,
+   "line": "L13"
+  },
+  {
+   "w": "ele",
+   "t0": 111.25,
+   "t1": 111.39,
+   "line": "L13"
+  },
+  {
+   "w": "foi",
+   "t0": 111.39,
+   "t1": 111.59,
+   "line": "L13"
+  },
+  {
+   "w": "desenhado",
+   "t0": 111.59,
+   "t1": 112.19,
+   "line": "L13"
+  },
+  {
+   "w": "para",
+   "t0": 112.19,
+   "t1": 112.43,
+   "line": "L13"
+  },
+  {
+   "w": "você",
+   "t0": 112.43,
+   "t1": 112.73,
+   "line": "L13"
+  },
+  {
+   "w": "perder.",
+   "t0": 112.73,
+   "t1": 113.13,
+   "line": "L13"
+  },
+  {
+   "w": "Se",
+   "t0": 116.53,
+   "t1": 116.71,
+   "line": "L14"
+  },
+  {
+   "w": "o",
+   "t0": 116.71,
+   "t1": 116.79,
+   "line": "L14"
+  },
+  {
+   "w": "jogo",
+   "t0": 116.79,
+   "t1": 117.01,
+   "line": "L14"
+  },
+  {
+   "w": "deixou",
+   "t0": 117.01,
+   "t1": 117.49,
+   "line": "L14"
+  },
+  {
+   "w": "de",
+   "t0": 117.49,
+   "t1": 117.63,
+   "line": "L14"
+  },
+  {
+   "w": "ser",
+   "t0": 117.63,
+   "t1": 117.89,
+   "line": "L14"
+  },
+  {
+   "w": "diversão,",
+   "t0": 117.89,
+   "t1": 118.45,
+   "line": "L14"
+  },
+  {
+   "w": "procure",
+   "t0": 118.93,
+   "t1": 119.19,
+   "line": "L14"
+  },
+  {
+   "w": "ajuda.",
+   "t0": 119.19,
+   "t1": 119.63,
+   "line": "L14"
+  },
+  {
+   "w": "O",
+   "t0": 120.31,
+   "t1": 120.67,
+   "line": "L14"
+  },
+  {
+   "w": "CVV",
+   "t0": 120.67,
+   "t1": 121.03,
+   "line": "L14"
+  },
+  {
+   "w": "atende",
+   "t0": 121.03,
+   "t1": 121.53,
+   "line": "L14"
+  },
+  {
+   "w": "de",
+   "t0": 121.53,
+   "t1": 121.75,
+   "line": "L14"
+  },
+  {
+   "w": "graça,",
+   "t0": 121.75,
+   "t1": 122.31,
+   "line": "L14"
+  },
+  {
+   "w": "pelo",
+   "t0": 122.45,
+   "t1": 122.81,
+   "line": "L14"
+  },
+  {
+   "w": "188.",
+   "t0": 123.09,
+   "t1": 124.43,
+   "line": "L14"
+  }
+ ],
+ "cues": [
+  {
+   "t0": 0.95,
+   "t1": 4.83,
+   "text": "Uma notificação. Bônus de 50 reais.",
+   "line": "L1"
+  },
+  {
+   "t0": 4.85,
+   "t1": 6.07,
+   "text": "Aposte agora.",
+   "line": "L1"
+  },
+  {
+   "t0": 7.27,
+   "t1": 10.21,
+   "text": "Este é o arquivo de um esquema que cabe no bolso de",
+   "line": "L2"
+  },
+  {
+   "t0": 10.23,
+   "t1": 13.15,
+   "text": "milhões de brasileiros: as bets.",
+   "line": "L2"
+  },
+  {
+   "t0": 13.25,
+   "t1": 15.41,
+   "text": "Prova número um: a isca.",
+   "line": "L3"
+  },
+  {
+   "t0": 15.43,
+   "t1": 19.81,
+   "text": "Bônus de boas-vindas, propaganda na camisa do seu time, e",
+   "line": "L3"
+  },
+  {
+   "t0": 19.83,
+   "t1": 23.77,
+   "text": "influenciadores mostrando ganhos que você nunca vê de perto.",
+   "line": "L3"
+  },
+  {
+   "t0": 23.87,
+   "t1": 26.81,
+   "text": "Prova número dois: a matemática.",
+   "line": "L4"
+  },
+  {
+   "t0": 26.83,
+   "t1": 29.69,
+   "text": "Em cada aposta, a casa embute uma margem.",
+   "line": "L4"
+  },
+  {
+   "t0": 29.71,
+   "t1": 33.669999999999995,
+   "text": "Nos cassinos online, as máquinas são programadas para",
+   "line": "L4"
+  },
+  {
+   "t0": 33.69,
+   "t1": 36.11,
+   "text": "devolver menos do que recebem.",
+   "line": "L4"
+  },
+  {
+   "t0": 36.31,
+   "t1": 38.91,
+   "text": "Você pode até ganhar uma vez.",
+   "line": "L5"
+  },
+  {
+   "t0": 38.93,
+   "t1": 42.73,
+   "text": "Mas quanto mais joga, mais perto chega da conta final:",
+   "line": "L5"
+  },
+  {
+   "t0": 42.75,
+   "t1": 44.67,
+   "text": "a casa sempre ganha.",
+   "line": "L5"
+  },
+  {
+   "t0": 44.77,
+   "t1": 47.61,
+   "text": "Prova número três: as vítimas.",
+   "line": "L6"
+  },
+  {
+   "t0": 47.63,
+   "t1": 51.129999999999995,
+   "text": "Segundo o Banco Central, cerca de 24 milhões de",
+   "line": "L6"
+  },
+  {
+   "t0": 51.15,
+   "t1": 54.62,
+   "text": "brasileiros apostaram em 2024.",
+   "line": "L6"
+  },
+  {
+   "t0": 54.64,
+   "t1": 59.18,
+   "text": "Só em agosto daquele ano, beneficiários do Bolsa Família",
+   "line": "L7"
+  },
+  {
+   "t0": 59.2,
+   "t1": 64.06,
+   "text": "enviaram 3 bilhões de reais às bets, via Pix.",
+   "line": "L7"
+  },
+  {
+   "t0": 64.46,
+   "t1": 67.10000000000001,
+   "text": "Prova número quatro: os danos.",
+   "line": "L8"
+  },
+  {
+   "t0": 67.12,
+   "t1": 70.36,
+   "text": "Dívidas. Nome sujo. Ansiedade.",
+   "line": "L8"
+  },
+  {
+   "t0": 70.38,
+   "t1": 74.52,
+   "text": "Vício. O dinheiro do aluguel e do mercado virando aposta.",
+   "line": "L8"
+  },
+  {
+   "t0": 75.52,
+   "t1": 78.2,
+   "text": "Agora, a pergunta que importa:",
+   "line": "L9"
+  },
+  {
+   "t0": 78.22,
+   "t1": 79.84,
+   "text": "quem realmente lucra?",
+   "line": "L9"
+  },
+  {
+   "t0": 80.84,
+   "t1": 85.82000000000001,
+   "text": "As operadoras, muitas ligadas a grupos estrangeiros, ficam",
+   "line": "L10"
+  },
+  {
+   "t0": 85.84,
+   "t1": 89.16,
+   "text": "com a diferença entre o que entra e o que sai.",
+   "line": "L10"
+  },
+  {
+   "t0": 89.21,
+   "t1": 93.05,
+   "text": "Alguns influenciadores ganham comissão sobre o quanto seus",
+   "line": "L11"
+  },
+  {
+   "t0": 93.07,
+   "t1": 98.01,
+   "text": "seguidores perdem. Quanto mais você perde, mais eles ganham.",
+   "line": "L11"
+  },
+  {
+   "t0": 98.06,
+   "t1": 101.68,
+   "text": "Clubes e emissoras recebem milhões em patrocínio.",
+   "line": "L12"
+  },
+  {
+   "t0": 101.7,
+   "t1": 104.92,
+   "text": "E o apostador? Fica com o prejuízo.",
+   "line": "L12"
+  },
+  {
+   "t0": 106.72,
+   "t1": 109.34,
+   "text": "O veredito: não é sorte.",
+   "line": "L13"
+  },
+  {
+   "t0": 109.36,
+   "t1": 113.58,
+   "text": "É um modelo de negócio. E ele foi desenhado para você perder.",
+   "line": "L13"
+  },
+  {
+   "t0": 116.48,
+   "t1": 120.24000000000001,
+   "text": "Se o jogo deixou de ser diversão, procure ajuda.",
+   "line": "L14"
+  },
+  {
+   "t0": 120.26,
+   "t1": 124.88,
+   "text": "O CVV atende de graça, pelo 188.",
+   "line": "L14"
+  }
+ ]
+}
