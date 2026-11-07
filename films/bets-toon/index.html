@@ -1,0 +1,327 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Quem ganha com as bets? (desenho)</title><style>
+@font-face{font-family:'Baloo 2';font-weight:800;src:url(fonts/baloo2-800.woff2) format('woff2');font-display:block}
+@font-face{font-family:'Lilita One';src:url(fonts/lilita.woff2) format('woff2');font-display:block}
+html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script type="module">
+// Sitcom sci-fi em 9:16: o celular do apostador é um portal para o mundo do dono da casa.
+import { clamp, lerp, hash, vnoise, TAU, ss, eio, eo, back } from '/core/lib.js';
+import * as T from './toon.js';
+const { INK, push, pop, translate, rotate, scale, shape, fillOnly, stroke, ell, arc, spline, rr, rect, noodle, quad, dot, text, bands } = T;
+const SW = 1080, SH = 1920;
+const cv = document.getElementById('c'); const g = T.init(cv);
+await Promise.all([document.fonts.load('800 50px "Baloo 2"', 'ÁÉÍÓÚÃÕÇáéíóúãõç?!'), document.fonts.load('120px "Lilita One"', 'ÁÉÍÓÚÃÕÇáéíóúãõç?!')]);
+const WORDS = await (await fetch('voice/words.json')).json();
+const VO = 0.8;
+const nrm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '');
+const at = (w, k = 0, end = false) => { let n = 0; for (const x of WORDS) if (nrm(x[0]) === nrm(w) && n++ === k) return VO + (end ? x[2] : x[1]); throw new Error(w); };
+const DUR = +(VO + WORDS[WORDS.length - 1][2] + 3.4).toFixed(2);
+const K = {
+  title: .45, nao: at('nao'), voce: at('voce', 0, true), dono: at('dono'), casa: at('casa', 0, true),
+  cada: at('cada'), topo: at('topo', 0, true), rico: at('rico'), rico2: at('rico', 1), com: at('com', 1), menos: at('menos', 0, true),
+  a: at('a'), ganha: at('ganha', 1, true),
+};
+K.s2 = K.nao - .1; K.w1 = K.dono - .2; K.s4 = K.cada - .2; K.s5 = K.topo + .05; K.w2 = K.com - .25; K.s7 = K.a - .2; K.close = K.ganha + .9;
+const P = { // paletas: o mundo "suspeitamente normal" é bege; o do dono é ultravioleta e ouro; ciano = só o portal
+  wall: ['#dccaa5', '#d3bf97'], floor: '#a58a63', floorS: '#8f744f', couch: '#8a6646', couchS: '#6f5034', fridge: '#efe7d4', fridgeS: '#d4c9b0',
+  skin: '#eab48b', skinS: '#cf946b', shirt: '#f08a2c', shirtS: '#c96a17', shorts: '#4a6fb5', shortsS: '#36548c', hair: '#2b2230',
+  uv: ['#25104f', '#331570', '#431c92', '#5524b3'], gold: '#ffc63a', goldS: '#d99a12', purple: '#8a3be0', purpleS: '#6424b5', belly: '#b07af0',
+  cyan: '#38e8ff', cyan2: '#a8f7ff', white: '#ffffff', mouthIn: '#4a1a2a', tongue: '#e8637a', red: '#e8443a',
+};
+const on12 = t => Math.floor(t * 12) / 12;           // personagens em 12 qps
+
+// ───────── peças de rosto (adaptadas do motor do estilo)
+function eye(cx, cy, rx, ry, { lid = 0, look = [0, 0], pupil = 5, skin = P.skin, jitter = 0, lower = 0, closed = false } = {}) {
+  if (closed) { stroke(arc(cx, cy + ry * .1, rx * .8, ry * .4, Math.PI * .1, Math.PI * .9, 14), 6); return; }
+  shape(ell(cx, cy, rx, ry, 36), { fill: P.white, lw: 6, shade: () => {
+    dot(cx + look[0] * rx * .55 + jitter, cy + look[1] * ry * .5, pupil);
+    if (lid > 0) { const yl = cy - ry + lid * 2 * ry; fillOnly([[cx - rx * 1.3, cy - ry * 1.4], [cx + rx * 1.3, cy - ry * 1.4], [cx + rx * 1.3, yl], [cx - rx * 1.3, yl + ry * .08]], skin, { boil: .5 }); stroke([[cx - rx * 1.2, yl + ry * .08], [cx + rx * 1.2, yl]], 6); }
+    if (lower > 0) { const yb = cy + ry - lower * 2 * ry; fillOnly([[cx - rx * 1.3, yb], [cx + rx * 1.3, yb], [cx + rx * 1.3, cy + ry * 1.4], [cx - rx * 1.3, cy + ry * 1.4]], skin, { boil: .5 }); }
+  } });
+}
+function mouth(cx, cy, mw, { o = 0, w = 1, sm = 0, gold = false } = {}) {
+  const hw = mw * w / 2, k = mw * .22, lc = [cx - hw, cy - sm * k], rc = [cx + hw, cy - sm * k];
+  if (o < .07) { stroke(quad(lc, [cx, cy + sm * k * 1.2], rc, 12), 6); return; }
+  const h = o * mw * .62, up = quad(lc, [cx, cy - h * .2 + sm * k * .4], rc, 12), dn = quad(rc, [cx, cy + h + sm * k * .6], lc, 14);
+  shape([...up, ...dn], { fill: P.mouthIn, lw: 6, shade: () => {
+    if (o > .2) fillOnly(rect(cx - hw * 1.2, cy - h, hw * 2.4, h * .45), P.white, { boil: .3 });
+    if (gold) fillOnly(rect(cx + hw * .15, cy - h * .1, hw * .3, h * .38), P.gold, { boil: .3 });
+    fillOnly(ell(cx + hw * .1, cy + h * .95, hw * .55, h * .45, 20), P.tongue, { boil: .3 });
+  } });
+}
+const sweat = (x, y, s = 1) => shape(spline([[x, y - 18 * s], [x + 10 * s, y + 4 * s], [x, y + 14 * s], [x - 10 * s, y + 4 * s]]), { fill: '#bfe9ff', lw: 5 });
+function coin(x, y, r, t, spin = 0) {
+  const sx = .35 + .65 * Math.abs(Math.cos(spin));
+  push(); translate(x, y); scale(sx, 1);
+  shape(ell(0, 0, r, r, 22), { fill: P.gold, lw: 5, shade: () => fillOnly(ell(r * .3, r * .25, r * .8, r * .8, 18), P.goldS, { boil: .3 }) });
+  if (sx > .6) text('$', 0, 2, { font: `800 ${r * 1.3}px "Baloo 2"`, fill: '#7a4e00' });
+  pop();
+}
+
+// ───────── o portal (só ele brilha): espiral ciano numa tela de celular
+function portal(cx, cy, r, t, { open = 1, sx = 1 } = {}) {
+  if (open <= .001) return;
+  const R = r * open;
+  push(); translate(cx, cy); scale(sx, 1);
+  fillOnly(ell(0, 0, R * 1.6, R * 1.5, 40), 'rgba(56,232,255,.13)', { boil: .6 });
+  fillOnly(ell(0, 0, R * 1.3, R * 1.25, 40), 'rgba(56,232,255,.18)', { boil: .6 });
+  const rim = []; for (let i = 0; i < 18; i++) { const a = i / 18 * TAU, k = 1 + .07 * Math.sin(a * 4 + t * 5) + .05 * (vnoise(i * 1.3 + t * 2) - .5); rim.push([Math.cos(a) * R * k, Math.sin(a) * R * k]); }
+  shape(spline(rim), { fill: '#1fb7d9', lw: 8, shade: () => {
+    fillOnly(ell(0, 0, R * .92, R * .92, 36), P.cyan, { boil: .3 });
+    for (let k = 0; k < 4; k++) { const a1 = [], a2 = [];
+      for (let j = 0; j <= 20; j++) { const u = j / 20, rr_ = R * (1 - u) * .95, a = k / 4 * TAU + u * 4 - t * 3; a1.push([Math.cos(a) * rr_, Math.sin(a) * rr_]); const b = a + .5 * (1 - u * .7); a2.push([Math.cos(b) * rr_, Math.sin(b) * rr_]); }
+      fillOnly([...a1, ...a2.reverse()], k % 2 ? P.cyan2 : '#16a5c7', { boil: .4 }); }
+    fillOnly(ell(0, 0, R * .25, R * .25, 20), P.white, { boil: .5 });
+  } });
+  for (let i = 0; i < 9; i++) { const a = hash(i) * TAU + t * (1.4 + hash(i + 3) * 2), d = R * (1.08 + .25 * ((t * .8 + hash(i + 7)) % 1)); dot(Math.cos(a) * d, Math.sin(a) * d, 4 + hash(i + 1) * 4, i % 3 ? P.cyan2 : P.white); }
+  pop();
+}
+function phone(x, y, s, t, { glow = 1, rot = 0, inner = null } = {}) {
+  push(); translate(x, y); rotate(rot); scale(s, s);
+  shape(rr(-60, -105, 120, 210, 20), { fill: '#2b2734', lw: 7 });
+  const scr = shape(rr(-48, -88, 96, 176, 10), { fill: glow > .05 ? '#0f5d72' : '#3a3d4a', lw: 4 });
+  if (glow > .05) { g.save(); g.clip(scr); portal(0, 0, 44, t, { open: glow }); if (inner) inner(); g.restore(); }
+  pop();
+  if (glow > .05) { push(); translate(x, y); fillOnly(ell(0, 0, 170 * s * glow, 190 * s * glow, 30), 'rgba(56,232,255,.12)', { boil: .5 }); pop(); }
+}
+
+// ───────── Tito (o apostador): origem = quadril, sentado
+function tito(x, y, s, t, o = {}) {
+  const tt = on12(t), br = 1 + .012 * Math.sin(tt * 3), j = o.jitter || 0;
+  const jx = j ? (hash(Math.floor(t * 12) * 1.7) - .5) * j : 0, jy = j ? (hash(Math.floor(t * 12) * 2.9) - .5) * j : 0;
+  push(); translate(x + jx, y + jy); scale(s, s * br);
+  // pernas (coxas para a frente, canelas para baixo) e chinelos
+  for (const sd of [-1, 1]) { shape(noodle([sd * 34, 0], [sd * 52, 60], -sd * 8, 50, 44), { fill: P.shorts, lw: 6 }); shape(noodle([sd * 52, 60], [sd * 58, 175], 0, 30, 24), { fill: P.skin, lw: 6 }); shape(ell(sd * 66, 182, 34, 12, 18), { fill: '#3fae6a', lw: 5 }); }
+  // tronco: camiseta laranja com furinho
+  shape(spline([[-72, -230], [72, -230], [86, -40], [70, 18], [-70, 18], [-86, -40]]), { fill: P.shirt, lw: 7, shade: () => fillOnly(rect(30, -240, 80, 280), P.shirtS, { boil: .4 }) });
+  shape(ell(-38, -60, 10, 7, 12), { fill: P.skin, lw: 4 });
+  shape(rr(18, -190, 44, 40, 6), { fill: P.shirtS, lw: 5 });                       // bolsinho
+  // braços segurando o celular
+  const hp = o.handPos || [0, -100];
+  for (const sd of [-1, 1]) shape(noodle([sd * 66, -200], [hp[0] + sd * 40, hp[1] + 10], sd * 26, 26, 22), { fill: P.skin, lw: 6 });
+  if (o.phone !== false) phone(hp[0], hp[1] - 20, .9, t, { glow: o.glow ?? 1, rot: o.prot || 0, inner: o.inner });
+  for (const sd of [-1, 1]) shape(ell(hp[0] + sd * 46, hp[1] + 14, 20, 17, 14), { fill: P.skin, lw: 5 });
+  // pescoço e cabeça
+  shape(rect(-16, -262, 32, 40), { fill: P.skin, lw: 6 });
+  const hy = -360;
+  for (const sd of [-1, 1]) shape(ell(sd * 92, hy + 10, 18, 26, 16), { fill: P.skin, lw: 6 });
+  shape(spline([[-88, hy - 40], [0, hy - 120], [88, hy - 40], [80, hy + 60], [0, hy + 105], [-80, hy + 60]]), { fill: P.skin, lw: 7, shade: () => fillOnly(ell(70, hy + 30, 60, 110, 20), P.skinS, { boil: .4 }) });
+  shape(spline([[-80, hy - 50], [-50, hy - 120], [-10, hy - 95], [20, hy - 135], [50, hy - 100], [90, hy - 60], [40, hy - 78], [0, hy - 70], [-40, hy - 80]]), { fill: P.hair, lw: 6 });
+  const look = o.look || [0, .4], lid = o.lid ?? .1, pj = o.pj || 0;
+  const pjx = pj ? (hash(Math.floor(t * 24) * 3.1) - .5) * pj : 0;
+  eye(-34, hy - 8, 38, 44, { look, lid, jitter: pjx, closed: o.blink });
+  eye(34, hy - 8, 38, 44, { look, lid, jitter: -pjx, closed: o.blink });
+  stroke(arc(-34, hy + 40, 26, 10, Math.PI * .15, Math.PI * .85, 10), 4); stroke(arc(34, hy + 40, 26, 10, Math.PI * .15, Math.PI * .85, 10), 4);   // olheiras
+  const bw = o.brow ?? 0; stroke([[-64, hy - 62 + bw * 10], [-12, hy - 70 - bw * 12]], 7); stroke([[12, hy - 70 - bw * 12], [64, hy - 62 + bw * 10]], 7);
+  stroke(quad([-6, hy + 8], [8, hy + 40], [-8, hy + 46], 8), 5);                  // nariz
+  mouth(0, hy + 72, 70, { o: o.mo || 0, sm: o.sm ?? -.4, w: o.mw || 1 });
+  if (o.sweat) sweat(-96, hy - 40 + ((t * 1.4) % 1) * 60, 1.1);
+  pop();
+}
+function moth(x, y, s, t) {
+  const f = Math.floor(t * 12) % 2;
+  push(); translate(x, y); scale(s, s);
+  for (const sd of [-1, 1]) shape(spline([[0, 0], [sd * 44, f ? -40 : -10], [sd * 52, f ? 6 : 24], [sd * 10, 14]]), { fill: '#b9b2a6', lw: 5 });
+  shape(ell(0, 4, 9, 20, 12), { fill: '#7d766c', lw: 5 }); stroke([[-4, -14], [-12, -30]], 3); stroke([[4, -14], [12, -30]], 3);
+  pop();
+}
+
+// ───────── O Dono (bolota roxa de cartola): origem = base do corpo
+function dono(x, y, s, t, o = {}) {
+  const tt = on12(t), inf = o.inf || 1, lg = o.laugh || 0, bob = lg ? Math.abs(Math.sin(tt * 14)) * 10 * lg : 0;
+  push(); translate(x, y - bob); scale(s * inf, s * inf * (1 + .015 * Math.sin(tt * 4)));
+  for (const sd of [-1, 1]) shape(ell(sd * 70, -8, 46, 22, 16), { fill: P.purpleS, lw: 6 });
+  shape(ell(0, -190, 170, 185, 60), { fill: P.purple, lw: 8, shade: () => { fillOnly(ell(95, -160, 110, 190, 30), P.purpleS, { boil: .4 }); fillOnly(ell(-20, -120, 95, 90, 30), P.belly, { boil: .4 }); } });
+  // braços curtinhos segurando uma moeda
+  shape(noodle([-150, -170], [-210, -240 - lg * 40], 20, 30, 24), { fill: P.purple, lw: 6 }); shape(ell(-214, -250 - lg * 40, 22, 20, 14), { fill: P.purple, lw: 5 });
+  shape(noodle([150, -170], [200, -120], -10, 30, 24), { fill: P.purple, lw: 6 });
+  coin(205, -130, 34, t, tt * 6);
+  // olhos convencidos + monóculo
+  eye(-50, -270, 40, 44, { look: o.look || [.2, .1], lid: .38, skin: P.purple });
+  eye(42, -270, 40, 44, { look: o.look || [.2, .1], lid: .38, skin: P.purple });
+  shape(ell(42, -270, 56, 60, 30), { fill: null, lw: 7, line: '#8a5a00' }); stroke(quad([90, -240], [130, -150], [100, -70], 12), 4, { line: '#8a5a00' });
+  stroke([[-92, -330], [-12, -318]], 8); stroke([[4, -318], [86, -332]], 8);
+  // sorriso com dente de ouro
+  mouth(-4, -190, 150, { o: lg ? .35 + .4 * Math.abs(Math.sin(tt * 14)) : .18, sm: .9, w: 1.05, gold: true });
+  // cartola
+  shape(ell(0, -360, 150, 26, 30), { fill: P.gold, lw: 7 });
+  shape(rr(-92, -560, 184, 200, 12), { fill: P.gold, lw: 7, shade: () => { fillOnly(rect(30, -570, 80, 220), P.goldS, { boil: .4 }); fillOnly(rect(-100, -420, 210, 40), INK, { boil: .3 }); } });
+  text('$', 0, -480, { font: '800 90px "Baloo 2"', fill: '#7a4e00' });
+  pop();
+}
+function throne(x, y, s) {
+  push(); translate(x, y); scale(s, s);
+  shape(rr(-230, -560, 460, 600, 60), { fill: P.gold, lw: 8, shade: () => fillOnly(rect(120, -600, 140, 700), P.goldS, { boil: .4 }) });
+  shape(rr(-190, -500, 380, 460, 40), { fill: P.red, lw: 7 });
+  for (const sd of [-1, 1]) shape(ell(sd * 230, -560, 34, 34, 16), { fill: P.gold, lw: 6 });
+  pop();
+}
+function coinHill(cx, by, w, h, t) {
+  const pts = [[cx - w / 2, by + 40], [cx - w * .38, by - h * .45], [cx - w * .15, by - h * .9], [cx, by - h], [cx + w * .15, by - h * .9], [cx + w * .38, by - h * .45], [cx + w / 2, by + 40]];
+  shape(spline(pts, true, 6), { fill: P.gold, lw: 8, shade: () => fillOnly(ell(cx + w * .3, by - h * .2, w * .3, h * .9, 24), P.goldS, { boil: .4 }) });
+  for (let i = 0; i < 26; i++) { const u = hash(i * 3.3), v = hash(i * 7.1), yy = by - v * h * .85, half = (w / 2) * (1 - (by - yy) / (h * 1.05)); coin(cx + (u - .5) * 2 * half * .85, yy, 26, t, i); }
+}
+
+// ───────── cenários
+function room(t, { fridgeOpen = 0 } = {}) {
+  bands(P.wall, -600, 1500);
+  fillOnly(rect(-600, 1500, 2400, 1200), P.floor, { boil: .3 }); stroke([[-600, 1500], [1800, 1500]], 6);
+  // quadro de pato na parede (o tédio do mundo normal)
+  shape(rr(120, 300, 240, 190, 8), { fill: '#b89a6a', lw: 6 }); shape(rr(140, 320, 200, 150, 4), { fill: '#e8dcc0', lw: 4 });
+  shape(ell(240, 410, 50, 32, 16), { fill: '#f2d14a', lw: 4 }); shape(ell(276, 382, 22, 20, 14), { fill: '#f2d14a', lw: 4 }); shape([[296, 384], [318, 390], [296, 394]], { fill: '#e8843a', lw: 3 });
+  // geladeira
+  push(); translate(880, 1500);
+  shape(rr(-150, -720, 300, 720, 24), { fill: P.fridge, lw: 7, shade: () => fillOnly(rect(80, -740, 100, 760), P.fridgeS, { boil: .4 }) });
+  if (fridgeOpen > 0) {
+    shape(rr(-138, -460, 276, 440, 10), { fill: '#fff7c9', lw: 5 }); stroke([[-138, -300], [138, -300]], 5); stroke([[-138, -150], [138, -150]], 5);
+    shape(rr(-150 - 230 * fridgeOpen, -470, 230 * fridgeOpen, 460, 16), { fill: P.fridgeS, lw: 6 });
+  } else { stroke([[-150, -480], [150, -480]], 6); shape(rr(100, -420, 18, 120, 8), { fill: '#bdb39b', lw: 4 }); }
+  shape(rr(100, -660, 18, 120, 8), { fill: '#bdb39b', lw: 4 });
+  pop();
+  // sofá
+  shape(rr(140, 1050, 800, 300, 60), { fill: P.couch, lw: 8, shade: () => fillOnly(rect(700, 1040, 260, 320), P.couchS, { boil: .4 }) });
+  shape(rr(120, 1260, 840, 220, 50), { fill: P.couch, lw: 8 });
+  for (const xx of [100, 860]) shape(rr(xx, 1150, 130, 330, 50), { fill: P.couchS, lw: 7 });
+  for (const xx of [320, 760]) shape(rect(xx, 1470, 24, 60), { fill: P.couchS, lw: 5 });
+}
+function uvWorld(t) {
+  bands(P.uv, -1400, 3400);
+  for (let i = 0; i < 40; i++) { const x = hash(i * 1.9) * 1400 - 160, y = hash(i * 4.3) * 2200 - 200, tw = .5 + .5 * Math.sin(on12(t) * 3 + i); dot(x, y, 3 + tw * 4, i % 4 ? P.gold : '#ffe9a8'); }
+}
+
+// ───────── plano a plano
+const cams = [];   // {t0, draw(t)}
+const shot = (t0, draw) => cams.push({ t0, draw });
+const cam = (cx, cy, z) => { translate(SW / 2, SH / 2); scale(z, z); translate(-cx, -cy); };
+
+// 1 · a pergunta (sala bege, Tito no sofá olhando o celular)
+shot(0, t => {
+  push(); const z = lerp(1, 1.06, ss(seg(t, 0, K.s2))); cam(540, 1000, z);
+  room(t); tito(540, 1330, 1.5, t, { look: [0, .55], lid: .2, glow: clamp(t / .4) });
+  pop();
+  title(t, K.title, ['QUEM GANHA', 'COM AS BETS?'], 330);
+});
+// 2 · close de reação: "não é você"
+shot(K.s2, t => {
+  push(); const rush = eio(seg(t, K.w1 - .35, K.w1 + .05)); cam(540 + rush * 0, lerp(860, 1180, rush), lerp(2.0, 7, rush * rush));
+  room(t);
+  const pocket = seg(t, K.nao + .15, K.voce);
+  tito(540, 1330, 1.5, t, { look: [lerp(0, .2, pocket), lerp(.5, -.1, pocket)], lid: 0, pj: 6, jitter: 4, sweat: true, mo: .25 * pocket, sm: -.8, brow: 1 });
+  if (t > K.nao + .1) moth(540 + 80 + (t - K.nao) * 120, 1330 - 1.5 * 190 - (t - K.nao) * 260 + Math.sin(t * 9) * 18, 1.1, t);
+  pop();
+});
+// 3 · o dono da casa
+shot(K.w1, t => {
+  push(); cam(540, 960, lerp(1.12, 1.0, eo(seg(t, K.w1, K.w1 + .8))));
+  uvWorld(t); coinHill(540, 1900, 1500, 620, t); throne(540, 1420, 1.25);
+  dono(540, 1380, 1.25, t, { laugh: t > K.dono + .2 ? 1 : .3, look: [0, .2] });
+  pop();
+  if (t > K.dono - .05) label(t, K.dono - .05, 'O DONO DA CASA', 290, -4);
+});
+// 4 · cada aposta perdida sobe pro topo (plano geral, a câmera sobe com as moedas)
+const COINS = Array.from({ length: 9 }, (_, i) => K.cada + .1 + i * .2);
+shot(K.s4, t => {
+  push(); const u = eio(seg(t, K.s4, K.topo)); cam(540, lerp(1500, 1000, u), .62);
+  uvWorld(t); fillOnly(rect(-600, 2060, 2300, 1200), P.goldS, { boil: .3 }); coinHill(540, 2050, 1700, 1250, t); throne(540, 880, .7); dono(540, 850, .7, t, { laugh: .6 });
+  // portal na base cuspindo moedas
+  portal(300, 2050, 150, t, { open: back(seg(t, K.s4, K.s4 + .35), 1.2), sx: 1.6 });
+  for (const c0 of COINS) { const p = (t - c0) / 1.0; if (p < 0 || p > 1) continue; const e = eio(p);
+    coin(lerp(300, 540 + Math.sin(c0 * 7) * 120, e), lerp(2000, 760, e) - Math.sin(p * Math.PI) * 160, 40, t, p * 12); }
+  pop();
+  label(t, K.s4 + .3, 'CADA APOSTA PERDIDA', 260, 3);
+  if (t > K.cada + 1.1) label(t, K.cada + 1.1, '↑ SOBE PRO TOPO', 400, -3, P.gold);
+});
+// 5 · o rico fica cada vez mais rico (close do dono inchando)
+shot(K.s5, t => {
+  push(); cam(540, 1060, 1.25);
+  uvWorld(t); coinHill(540, 1900, 1500, 620, t); throne(540, 1420, 1.25);
+  const i1 = seg(t, K.rico, K.rico + .35), i2 = seg(t, K.rico2, K.rico2 + .35), sq = (u, t0) => u > 0 ? .07 * Math.exp(-(t - t0) * 6) * Math.cos((t - t0) * 22) : 0;
+  const inf = 1 + .16 * back(i1, 2.5) + .2 * back(i2, 2.5) + sq(i1, K.rico) + sq(i2, K.rico2);
+  dono(540, 1380, 1.25, t, { inf, laugh: 1 });
+  for (let i = 0; i < 14; i++) { const c0 = K.s5 + hash(i) * 1.4, p = (t - c0) / 1.1; if (p < 0 || p > 1) continue; coin(80 + hash(i * 2.3) * 920, lerp(250, 1700, ei2(p)), 34, t, p * 10 + i); }
+  pop();
+  if (t > K.rico2 - .1) label(t, K.rico2 - .1, 'CADA VEZ MAIS RICO', 270, -3, P.gold);
+});
+const ei2 = p => p * p;
+// 6 · com o dinheiro de quem tem menos (sala bege, geladeira vazia)
+shot(K.w2, t => {
+  push(); cam(560, 1080, lerp(1.05, .98, ss(seg(t, K.w2, K.s7))));
+  room(t, { fridgeOpen: eo(seg(t, K.w2 + .3, K.w2 + .7)) });
+  moth(880 + Math.sin(t * 3) * 60, 1180 + Math.cos(t * 4) * 30, .9, t);
+  tito(500, 1330, 1.4, t, { look: [.7, .1], lid: .5, glow: 0, sm: -1, brow: -.5, handPos: [0, -60] });
+  pop();
+  if (t > K.w2 + .6) label(t, K.w2 + .6, 'QUEM TEM MENOS PAGA', 300, 3);
+});
+// 7 · a casa sempre ganha (o celular mostra o dono rindo; o portal fecha; silêncio)
+shot(K.s7, t => {
+  push(); cam(560, 1080, lerp(.98, 1.04, ss(seg(t, K.s7, DUR))));
+  room(t, { fridgeOpen: 1 });
+  moth(880 + Math.sin(t * 3) * 60, 1180 + Math.cos(t * 4) * 30, .9, t);
+  const glow = 1 - eo(seg(t, K.close, K.close + .25));
+  const blink = Math.abs(t - (K.close + 1.1)) < .09;
+  tito(500, 1330, 1.4, t, { look: t > K.close + 1.4 ? [0, -.2] : [0, .55], lid: .5, sm: -1, glow, blink, inner: () => { push(); scale(.18); dono(0, 300, 1, t, { laugh: 1 }); pop(); } });
+  pop();
+  title(t, K.a, ['A CASA', 'SEMPRE GANHA'], 330, P.red);
+});
+
+// ───────── títulos (pop em degraus de 12 qps) e etiquetas
+function seg(t, a, b) { return clamp((t - a) / (b - a)); }
+function title(t, t0, lines, y, col = '#ffd23a') {
+  if (t < t0) return;
+  lines.forEach((L, i) => { const u = on12(t - t0 - i * .18); if (u < 0) return; const s = back(clamp(u / .33), 2.4);
+    T.reset(); translate(SW / 2, y + i * 150); rotate((i ? 2.5 : -2.5) * Math.PI / 180); scale(s, s);
+    text(L, 8, 10, { font: '138px "Lilita One"', fill: INK, outlineW: 26, outlineCol: INK });
+    text(L, 0, 0, { font: '138px "Lilita One"', fill: col, outlineW: 18, outlineCol: INK }); });
+}
+function label(t, t0, str, y, rotDeg = 0, col = '#ffffff') {
+  const u = on12(t - t0); if (u < 0) return; const s = back(clamp(u / .3), 2.2);
+  T.reset(); translate(SW / 2, y); rotate(rotDeg * Math.PI / 180); scale(s, s);
+  text(str, 0, 0, { font: '96px "Lilita One"', fill: col, outlineW: 20, outlineCol: INK });
+}
+
+// ───────── portal-wipe (giro ciano cobrindo a tela)
+const WIPES = [K.w1, K.w2];
+function wipe(t) {
+  for (const c of WIPES) { const p = (t - (c - .22)) / .44; if (p <= 0 || p >= 1) continue;
+    const cover = Math.sin(Math.PI * p); T.reset(); portal(SW / 2, SH / 2, 1300 * cover + 10, t * 2.5, { open: 1 }); }
+}
+
+// ───────── legendas (estilo do próprio desenho: branco com contorno preto grosso, pílula do narrador)
+const subs = []; let cur = [];
+WORDS.forEach((w, i) => { cur.push(w); const txt = cur.map(x => x[0]).join(' '); if (i === WORDS.length - 1 || /[.?!]$/.test(w[0]) || (/,$/.test(w[0]) && txt.length > 9) || txt.length > 22) { subs.push({ t0: VO + cur[0][1] - .05, t1: VO + w[2] + .3, text: txt }); cur = []; } });
+for (let i = 0; i < subs.length - 1; i++) subs[i].t1 = Math.min(Math.max(subs[i].t1, subs[i].t0 + 1.0), subs[i + 1].t0 - .03);
+window.SUBS = subs;
+function subtitle(t) {
+  const s = subs.find(s => t >= s.t0 && t < s.t1); if (!s) return;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.font = '800 60px "Baloo 2"'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  const y = 1745; g.lineJoin = 'round'; g.lineWidth = 13; g.strokeStyle = INK; g.strokeText(s.text, SW / 2, y); g.fillStyle = '#fff'; g.fillText(s.text, SW / 2, y);
+  const w = g.measureText(s.text).width; T.reset(); shape(rr(SW / 2 - w / 2 - 20, y - 105, 200, 44, 22), { fill: P.cyan, lw: 5 });
+  g.setTransform(1, 0, 0, 1, 0, 0); g.font = '800 26px "Baloo 2"'; g.fillStyle = INK; g.textAlign = 'left'; g.fillText('NARRADOR', SW / 2 - w / 2 + 2, y - 82);
+}
+
+function render(t) {
+  T.frame(t);
+  g.fillStyle = '#000'; g.fillRect(0, 0, SW, SH);
+  let k = 0; for (let i = 0; i < cams.length; i++) if (t >= cams[i].t0) k = i;
+  cams[k].draw(t);
+  T.reset(); wipe(t); subtitle(t);
+}
+
+// ───────── eventos de som
+const EV = [];
+const ev = (t, type, o = {}) => EV.push({ t: +t.toFixed(3), type, ...o });
+ev(.05, 'portalOpen', { v: .4 }); ev(K.title, 'pop'); ev(K.title + .18, 'pop');
+ev(K.s2, 'cut'); ev(K.nao + .1, 'blip'); ev(K.nao + .15, 'flutter', { d: 1.2 }); ev(K.s2 + .1, 'sweat');
+WIPES.forEach(c => { ev(c - .3, 'swirl'); ev(c, 'portalOpen', { v: 1 }); });
+ev(K.dono, 'boing'); ev(K.dono - .05, 'pop');
+ev(K.s4, 'cut'); ev(K.s4 + .05, 'portalOpen', { v: .6 }); COINS.forEach(c => { ev(c, 'spit'); ev(c + 1, 'clink'); }); ev(K.s4 + .3, 'pop'); ev(K.cada + 1.1, 'pop');
+ev(K.s5, 'cut'); ev(K.rico, 'inflate'); ev(K.rico2, 'inflate', { big: 1 }); ev(K.rico2 - .1, 'pop');
+for (let i = 0; i < 14; i++) ev(K.s5 + hash(i) * 1.4 + 1.0, 'clink', { v: .35 });
+ev(K.w2 + .3, 'fridge'); ev(K.w2 + .6, 'pop'); ev(K.w2 + .2, 'flutter', { d: 3 });
+ev(K.a, 'pop'); ev(K.a + .18, 'pop', { big: 1 });
+ev(K.close, 'fwump'); ev(K.close + 1.1, 'blip');
+ev(K.w2, 'humOn', { d: DUR - K.w2 });
+EV.sort((a, b) => a.t - b.t);
+window.DUR = DUR; window.EV = EV; window.render = render; window.K = K;
+render(0); window.READY = true;
+</script></body></html>
