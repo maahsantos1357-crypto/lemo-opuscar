@@ -1,0 +1,125 @@
+[
+ {
+  "id": "L01",
+  "text": "Afinal... quem realmente ganha com as bets?",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L02",
+  "text": "Spoiler: não é você.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L03",
+  "text": "Olha só o Tito. Ele deposita 100 reais, todo animado.",
+  "say": "Olha só o Tito. Ele deposita cem reais, todo animado.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L04",
+  "text": "Só que a casa já começa na frente: tem uma margem escondida em cada aposta.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L05",
+  "text": "No cassino online é pior. A maquininha é programada pra devolver menos do que recebe. Sempre.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L06",
+  "text": "Ganhou uma vez? Ótimo! Esse é o anzol.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L07",
+  "text": "O Tito volta, aposta de novo... e o saldo vai descendo, descendo, até zerar.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L08",
+  "text": "Agora multiplica isso. Segundo o Banco Central, foram cerca de 24 milhões de apostadores no Brasil em 2024.",
+  "say": "Agora multiplica isso. Segundo o Banco Central, foram cerca de vinte e quatro milhões de apostadores no Brasil em dois mil e vinte e quatro.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L09",
+  "text": "E pra onde vai esse dinheiro todo? Bora seguir ele.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L10",
+  "text": "Do outro lado do portal está ele: o dono da casa!",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L11",
+  "text": "Cada aposta perdida sobe direto pro topo da montanha.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L12",
+  "text": "E ele não está sozinho. Influenciadores ganham comissão quando os seguidores perdem.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L13",
+  "text": "Clubes e emissoras faturam milhões em patrocínio.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L14",
+  "text": "É assim que o rico fica cada vez mais rico... com o dinheiro de quem tem menos.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L15",
+  "text": "Enquanto isso, lá embaixo, falta pro aluguel, falta pro mercado.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L16",
+  "text": "Então, da próxima vez que aparecer um bônus grátis, lembra: a casa sempre ganha.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ },
+ {
+  "id": "L17",
+  "text": "E se o jogo deixou de ser diversão, procura ajuda. O CVV atende de graça, no 188.",
+  "say": "E se o jogo deixou de ser diversão, procura ajuda. O CVV atende de graça, no cento e oitenta e oito.",
+  "asr": "E se o jogo deixou de ser diversão, procura ajuda. O CVV atende de graça, no 188.",
+  "voice": "pt-BR-AntonioNeural",
+  "rate": "+12%",
+  "pitch": "+3Hz"
+ }
+]

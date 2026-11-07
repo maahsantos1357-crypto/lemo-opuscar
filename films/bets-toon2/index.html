@@ -1,0 +1,427 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Quem ganha com as bets?</title><style>
+@font-face{font-family:'Baloo 2';font-weight:800;src:url(fonts/baloo2-800.woff2) format('woff2');font-display:block}
+@font-face{font-family:'Lilita One';src:url(fonts/lilita.woff2) format('woff2');font-display:block}
+html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script type="module">
+// Sitcom sci-fi em 9:16: o celular do apostador é um portal para o mundo do dono da casa.
+import { clamp, lerp, hash, vnoise, TAU, ss, eio, eo, back } from '/core/lib.js';
+import * as T from './toon.js';
+const { INK, push, pop, translate, rotate, scale, shape, fillOnly, stroke, ell, arc, spline, rr, rect, noodle, quad, dot, text, bands } = T;
+const SW = 1080, SH = 1920;
+const cv = document.getElementById('c'); const g = T.init(cv);
+await Promise.all([document.fonts.load('800 50px "Baloo 2"', 'ÁÉÍÓÚÃÕÇáéíóúãõç?!'), document.fonts.load('120px "Lilita One"', 'ÁÉÍÓÚÃÕÇáéíóúãõç?!')]);
+const VW = await (await fetch('voice/words.json')).json();
+const LINES = await (await fetch('lines.json')).json();
+const nrm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '');
+const GAP = { L01: .7, L02: .35, L03: .6, L04: .35, L05: .5, L06: .5, L07: .35, L08: .6, L09: .6, L10: 1.0, L11: .4, L12: .5, L13: .35, L14: .4, L15: 1.0, L16: .6, L17: 1.0 };
+const L = {}; let tc = 0;
+for (const l of LINES) { tc += GAP[l.id]; const d = VW.dur[l.id]; L[l.id] = { t0: tc, t1: tc + d, w: VW.words[l.id], text: l.text }; tc += d; }
+const DUR = +(tc + 3.2).toFixed(2);
+const at = (id, w, k = 0, end = false) => { let n = 0; for (const x of L[id].w) if (nrm(x[0]).startsWith(nrm(w)) && n++ === k) return L[id].t0 + (end ? x[2] : x[1]); console.warn('word', id, w); return L[id].t0; };
+const st = id => L[id].t0 - .12;
+const K = { w1: L.L10.t0 - .3, w2: L.L15.t0 - .35, close: L.L17.t1 + .5 };
+const P = { // paletas: o mundo "suspeitamente normal" é bege; o do dono é ultravioleta e ouro; ciano = só o portal
+  wall: ['#dccaa5', '#d3bf97'], floor: '#a58a63', floorS: '#8f744f', couch: '#8a6646', couchS: '#6f5034', fridge: '#efe7d4', fridgeS: '#d4c9b0',
+  skin: '#eab48b', skinS: '#cf946b', shirt: '#f08a2c', shirtS: '#c96a17', shorts: '#4a6fb5', shortsS: '#36548c', hair: '#2b2230',
+  uv: ['#25104f', '#331570', '#431c92', '#5524b3'], gold: '#ffc63a', goldS: '#d99a12', purple: '#8a3be0', purpleS: '#6424b5', belly: '#b07af0',
+  cyan: '#38e8ff', cyan2: '#a8f7ff', white: '#ffffff', mouthIn: '#4a1a2a', tongue: '#e8637a', red: '#e8443a',
+};
+const on12 = t => Math.floor(t * 12) / 12;           // personagens em 12 qps
+
+// ───────── peças de rosto (adaptadas do motor do estilo)
+function eye(cx, cy, rx, ry, { lid = 0, look = [0, 0], pupil = 5, skin = P.skin, jitter = 0, lower = 0, closed = false } = {}) {
+  if (closed) { stroke(arc(cx, cy + ry * .1, rx * .8, ry * .4, Math.PI * .1, Math.PI * .9, 14), 6); return; }
+  shape(ell(cx, cy, rx, ry, 36), { fill: P.white, lw: 6, shade: () => {
+    dot(cx + look[0] * rx * .55 + jitter, cy + look[1] * ry * .5, pupil);
+    if (lid > 0) { const yl = cy - ry + lid * 2 * ry; fillOnly([[cx - rx * 1.3, cy - ry * 1.4], [cx + rx * 1.3, cy - ry * 1.4], [cx + rx * 1.3, yl], [cx - rx * 1.3, yl + ry * .08]], skin, { boil: .5 }); stroke([[cx - rx * 1.2, yl + ry * .08], [cx + rx * 1.2, yl]], 6); }
+    if (lower > 0) { const yb = cy + ry - lower * 2 * ry; fillOnly([[cx - rx * 1.3, yb], [cx + rx * 1.3, yb], [cx + rx * 1.3, cy + ry * 1.4], [cx - rx * 1.3, cy + ry * 1.4]], skin, { boil: .5 }); }
+  } });
+}
+function mouth(cx, cy, mw, { o = 0, w = 1, sm = 0, gold = false } = {}) {
+  const hw = mw * w / 2, k = mw * .22, lc = [cx - hw, cy - sm * k], rc = [cx + hw, cy - sm * k];
+  if (o < .07) { stroke(quad(lc, [cx, cy + sm * k * 1.2], rc, 12), 6); return; }
+  const h = o * mw * .62, up = quad(lc, [cx, cy - h * .2 + sm * k * .4], rc, 12), dn = quad(rc, [cx, cy + h + sm * k * .6], lc, 14);
+  shape([...up, ...dn], { fill: P.mouthIn, lw: 6, shade: () => {
+    if (o > .2) fillOnly(rect(cx - hw * 1.2, cy - h, hw * 2.4, h * .45), P.white, { boil: .3 });
+    if (gold) fillOnly(rect(cx + hw * .15, cy - h * .1, hw * .3, h * .38), P.gold, { boil: .3 });
+    fillOnly(ell(cx + hw * .1, cy + h * .95, hw * .55, h * .45, 20), P.tongue, { boil: .3 });
+  } });
+}
+const sweat = (x, y, s = 1) => shape(spline([[x, y - 18 * s], [x + 10 * s, y + 4 * s], [x, y + 14 * s], [x - 10 * s, y + 4 * s]]), { fill: '#bfe9ff', lw: 5 });
+function coin(x, y, r, t, spin = 0) {
+  const sx = .35 + .65 * Math.abs(Math.cos(spin));
+  push(); translate(x, y); scale(sx, 1);
+  shape(ell(0, 0, r, r, 22), { fill: P.gold, lw: 5, shade: () => fillOnly(ell(r * .3, r * .25, r * .8, r * .8, 18), P.goldS, { boil: .3 }) });
+  if (sx > .6) text('$', 0, 2, { font: `800 ${r * 1.3}px "Baloo 2"`, fill: '#7a4e00' });
+  pop();
+}
+
+// ───────── o portal (só ele brilha): espiral ciano numa tela de celular
+function portal(cx, cy, r, t, { open = 1, sx = 1 } = {}) {
+  if (open <= .001) return;
+  const R = r * open;
+  push(); translate(cx, cy); scale(sx, 1);
+  fillOnly(ell(0, 0, R * 1.6, R * 1.5, 40), 'rgba(56,232,255,.13)', { boil: .6 });
+  fillOnly(ell(0, 0, R * 1.3, R * 1.25, 40), 'rgba(56,232,255,.18)', { boil: .6 });
+  const rim = []; for (let i = 0; i < 18; i++) { const a = i / 18 * TAU, k = 1 + .07 * Math.sin(a * 4 + t * 5) + .05 * (vnoise(i * 1.3 + t * 2) - .5); rim.push([Math.cos(a) * R * k, Math.sin(a) * R * k]); }
+  shape(spline(rim), { fill: '#1fb7d9', lw: 8, shade: () => {
+    fillOnly(ell(0, 0, R * .92, R * .92, 36), P.cyan, { boil: .3 });
+    for (let k = 0; k < 4; k++) { const a1 = [], a2 = [];
+      for (let j = 0; j <= 20; j++) { const u = j / 20, rr_ = R * (1 - u) * .95, a = k / 4 * TAU + u * 4 - t * 3; a1.push([Math.cos(a) * rr_, Math.sin(a) * rr_]); const b = a + .5 * (1 - u * .7); a2.push([Math.cos(b) * rr_, Math.sin(b) * rr_]); }
+      fillOnly([...a1, ...a2.reverse()], k % 2 ? P.cyan2 : '#16a5c7', { boil: .4 }); }
+    fillOnly(ell(0, 0, R * .25, R * .25, 20), P.white, { boil: .5 });
+  } });
+  for (let i = 0; i < 9; i++) { const a = hash(i) * TAU + t * (1.4 + hash(i + 3) * 2), d = R * (1.08 + .25 * ((t * .8 + hash(i + 7)) % 1)); dot(Math.cos(a) * d, Math.sin(a) * d, 4 + hash(i + 1) * 4, i % 3 ? P.cyan2 : P.white); }
+  pop();
+}
+function phone(x, y, s, t, { glow = 1, rot = 0, inner = null, screenFn = null } = {}) {
+  push(); translate(x, y); rotate(rot); scale(s, s);
+  shape(rr(-60, -105, 120, 210, 20), { fill: '#2b2734', lw: 7 });
+  const scr = shape(rr(-48, -88, 96, 176, 10), { fill: screenFn ? '#f4fbff' : glow > .05 ? '#0f5d72' : '#3a3d4a', lw: 4 });
+  if (screenFn) { g.save(); g.clip(scr); fillOnly(rr(-48, -88, 96, 176, 10), '#f4fbff', { boil: .2 }); screenFn(); g.restore(); }
+  else if (glow > .05) { g.save(); g.clip(scr); portal(0, 0, 44, t, { open: glow }); if (inner) inner(); g.restore(); }
+  pop();
+  if (glow > .05 && !screenFn) { push(); translate(x, y); fillOnly(ell(0, 0, 170 * s * glow, 190 * s * glow, 30), 'rgba(56,232,255,.12)', { boil: .5 }); pop(); }
+}
+
+// ───────── Tito (o apostador): origem = quadril, sentado
+function tito(x, y, s, t, o = {}) {
+  const tt = on12(t), br = 1 + .012 * Math.sin(tt * 3), j = o.jitter || 0;
+  const jx = j ? (hash(Math.floor(t * 12) * 1.7) - .5) * j : 0, jy = j ? (hash(Math.floor(t * 12) * 2.9) - .5) * j : 0;
+  push(); translate(x + jx, y + jy); scale(s, s * br);
+  // pernas (coxas para a frente, canelas para baixo) e chinelos
+  for (const sd of [-1, 1]) { shape(noodle([sd * 34, 0], [sd * 52, 60], -sd * 8, 50, 44), { fill: P.shorts, lw: 6 }); shape(noodle([sd * 52, 60], [sd * 58, 175], 0, 30, 24), { fill: P.skin, lw: 6 }); shape(ell(sd * 66, 182, 34, 12, 18), { fill: '#3fae6a', lw: 5 }); }
+  // tronco: camiseta laranja com furinho
+  shape(spline([[-72, -230], [72, -230], [86, -40], [70, 18], [-70, 18], [-86, -40]]), { fill: P.shirt, lw: 7, shade: () => fillOnly(rect(30, -240, 80, 280), P.shirtS, { boil: .4 }) });
+  shape(ell(-38, -60, 10, 7, 12), { fill: P.skin, lw: 4 });
+  shape(rr(18, -190, 44, 40, 6), { fill: P.shirtS, lw: 5 });                       // bolsinho
+  // braços segurando o celular
+  const hp = o.handPos || [0, -100];
+  for (const sd of [-1, 1]) shape(noodle([sd * 66, -200], [hp[0] + sd * 40, hp[1] + 10], sd * 26, 26, 22), { fill: P.skin, lw: 6 });
+  if (o.phone !== false) phone(hp[0], hp[1] - 20, .9, t, { glow: o.glow ?? 1, rot: o.prot || 0, inner: o.inner, screenFn: o.screenFn });
+  for (const sd of [-1, 1]) shape(ell(hp[0] + sd * 46, hp[1] + 14, 20, 17, 14), { fill: P.skin, lw: 5 });
+  // pescoço e cabeça
+  shape(rect(-16, -262, 32, 40), { fill: P.skin, lw: 6 });
+  const hy = -360;
+  for (const sd of [-1, 1]) shape(ell(sd * 92, hy + 10, 18, 26, 16), { fill: P.skin, lw: 6 });
+  shape(spline([[-88, hy - 40], [0, hy - 120], [88, hy - 40], [80, hy + 60], [0, hy + 105], [-80, hy + 60]]), { fill: P.skin, lw: 7, shade: () => fillOnly(ell(70, hy + 30, 60, 110, 20), P.skinS, { boil: .4 }) });
+  shape(spline([[-80, hy - 50], [-50, hy - 120], [-10, hy - 95], [20, hy - 135], [50, hy - 100], [90, hy - 60], [40, hy - 78], [0, hy - 70], [-40, hy - 80]]), { fill: P.hair, lw: 6 });
+  const look = o.look || [0, .4], lid = o.lid ?? .1, pj = o.pj || 0;
+  const pjx = pj ? (hash(Math.floor(t * 24) * 3.1) - .5) * pj : 0;
+  eye(-34, hy - 8, 38, 44, { look, lid, jitter: pjx, closed: o.blink });
+  eye(34, hy - 8, 38, 44, { look, lid, jitter: -pjx, closed: o.blink });
+  stroke(arc(-34, hy + 40, 26, 10, Math.PI * .15, Math.PI * .85, 10), 4); stroke(arc(34, hy + 40, 26, 10, Math.PI * .15, Math.PI * .85, 10), 4);   // olheiras
+  const bw = o.brow ?? 0; stroke([[-64, hy - 62 + bw * 10], [-12, hy - 70 - bw * 12]], 7); stroke([[12, hy - 70 - bw * 12], [64, hy - 62 + bw * 10]], 7);
+  stroke(quad([-6, hy + 8], [8, hy + 40], [-8, hy + 46], 8), 5);                  // nariz
+  mouth(0, hy + 72, 70, { o: o.mo || 0, sm: o.sm ?? -.4, w: o.mw || 1 });
+  if (o.sweat) sweat(-96, hy - 40 + ((t * 1.4) % 1) * 60, 1.1);
+  pop();
+}
+function moth(x, y, s, t) {
+  const f = Math.floor(t * 12) % 2;
+  push(); translate(x, y); scale(s, s);
+  for (const sd of [-1, 1]) shape(spline([[0, 0], [sd * 44, f ? -40 : -10], [sd * 52, f ? 6 : 24], [sd * 10, 14]]), { fill: '#b9b2a6', lw: 5 });
+  shape(ell(0, 4, 9, 20, 12), { fill: '#7d766c', lw: 5 }); stroke([[-4, -14], [-12, -30]], 3); stroke([[4, -14], [12, -30]], 3);
+  pop();
+}
+
+// ───────── O Dono (bolota roxa de cartola): origem = base do corpo
+function dono(x, y, s, t, o = {}) {
+  const tt = on12(t), inf = o.inf || 1, lg = o.laugh || 0, bob = lg ? Math.abs(Math.sin(tt * 14)) * 10 * lg : 0;
+  push(); translate(x, y - bob); scale(s * inf, s * inf * (1 + .015 * Math.sin(tt * 4)));
+  for (const sd of [-1, 1]) shape(ell(sd * 70, -8, 46, 22, 16), { fill: P.purpleS, lw: 6 });
+  shape(ell(0, -190, 170, 185, 60), { fill: P.purple, lw: 8, shade: () => { fillOnly(ell(95, -160, 110, 190, 30), P.purpleS, { boil: .4 }); fillOnly(ell(-20, -120, 95, 90, 30), P.belly, { boil: .4 }); } });
+  // braços curtinhos segurando uma moeda
+  shape(noodle([-150, -170], [-210, -240 - lg * 40], 20, 30, 24), { fill: P.purple, lw: 6 }); shape(ell(-214, -250 - lg * 40, 22, 20, 14), { fill: P.purple, lw: 5 });
+  shape(noodle([150, -170], [200, -120], -10, 30, 24), { fill: P.purple, lw: 6 });
+  coin(205, -130, 34, t, tt * 6);
+  // olhos convencidos + monóculo
+  eye(-50, -270, 40, 44, { look: o.look || [.2, .1], lid: .38, skin: P.purple });
+  eye(42, -270, 40, 44, { look: o.look || [.2, .1], lid: .38, skin: P.purple });
+  shape(ell(42, -270, 56, 60, 30), { fill: null, lw: 7, line: '#8a5a00' }); stroke(quad([90, -240], [130, -150], [100, -70], 12), 4, { line: '#8a5a00' });
+  stroke([[-92, -330], [-12, -318]], 8); stroke([[4, -318], [86, -332]], 8);
+  // sorriso com dente de ouro
+  mouth(-4, -190, 150, { o: lg ? .35 + .4 * Math.abs(Math.sin(tt * 14)) : .18, sm: .9, w: 1.05, gold: true });
+  // cartola
+  shape(ell(0, -360, 150, 26, 30), { fill: P.gold, lw: 7 });
+  shape(rr(-92, -560, 184, 200, 12), { fill: P.gold, lw: 7, shade: () => { fillOnly(rect(30, -570, 80, 220), P.goldS, { boil: .4 }); fillOnly(rect(-100, -420, 210, 40), INK, { boil: .3 }); } });
+  text('$', 0, -480, { font: '800 90px "Baloo 2"', fill: '#7a4e00' });
+  pop();
+}
+function throne(x, y, s) {
+  push(); translate(x, y); scale(s, s);
+  shape(rr(-230, -560, 460, 600, 60), { fill: P.gold, lw: 8, shade: () => fillOnly(rect(120, -600, 140, 700), P.goldS, { boil: .4 }) });
+  shape(rr(-190, -500, 380, 460, 40), { fill: P.red, lw: 7 });
+  for (const sd of [-1, 1]) shape(ell(sd * 230, -560, 34, 34, 16), { fill: P.gold, lw: 6 });
+  pop();
+}
+function coinHill(cx, by, w, h, t) {
+  const pts = [[cx - w / 2, by + 40], [cx - w * .38, by - h * .45], [cx - w * .15, by - h * .9], [cx, by - h], [cx + w * .15, by - h * .9], [cx + w * .38, by - h * .45], [cx + w / 2, by + 40]];
+  shape(spline(pts, true, 6), { fill: P.gold, lw: 8, shade: () => fillOnly(ell(cx + w * .3, by - h * .2, w * .3, h * .9, 24), P.goldS, { boil: .4 }) });
+  for (let i = 0; i < 26; i++) { const u = hash(i * 3.3), v = hash(i * 7.1), yy = by - v * h * .85, half = (w / 2) * (1 - (by - yy) / (h * 1.05)); coin(cx + (u - .5) * 2 * half * .85, yy, 26, t, i); }
+}
+
+// ───────── cenários
+function room(t, { fridgeOpen = 0 } = {}) {
+  bands(P.wall, -600, 1500);
+  fillOnly(rect(-600, 1500, 2400, 1200), P.floor, { boil: .3 }); stroke([[-600, 1500], [1800, 1500]], 6);
+  // quadro de pato na parede (o tédio do mundo normal)
+  shape(rr(120, 300, 240, 190, 8), { fill: '#b89a6a', lw: 6 }); shape(rr(140, 320, 200, 150, 4), { fill: '#e8dcc0', lw: 4 });
+  shape(ell(240, 410, 50, 32, 16), { fill: '#f2d14a', lw: 4 }); shape(ell(276, 382, 22, 20, 14), { fill: '#f2d14a', lw: 4 }); shape([[296, 384], [318, 390], [296, 394]], { fill: '#e8843a', lw: 3 });
+  // geladeira
+  push(); translate(880, 1500);
+  shape(rr(-150, -720, 300, 720, 24), { fill: P.fridge, lw: 7, shade: () => fillOnly(rect(80, -740, 100, 760), P.fridgeS, { boil: .4 }) });
+  if (fridgeOpen > 0) {
+    shape(rr(-138, -460, 276, 440, 10), { fill: '#fff7c9', lw: 5 }); stroke([[-138, -300], [138, -300]], 5); stroke([[-138, -150], [138, -150]], 5);
+    shape(rr(-150 - 230 * fridgeOpen, -470, 230 * fridgeOpen, 460, 16), { fill: P.fridgeS, lw: 6 });
+  } else { stroke([[-150, -480], [150, -480]], 6); shape(rr(100, -420, 18, 120, 8), { fill: '#bdb39b', lw: 4 }); }
+  shape(rr(100, -660, 18, 120, 8), { fill: '#bdb39b', lw: 4 });
+  pop();
+  // sofá
+  shape(rr(140, 1050, 800, 300, 60), { fill: P.couch, lw: 8, shade: () => fillOnly(rect(700, 1040, 260, 320), P.couchS, { boil: .4 }) });
+  shape(rr(120, 1260, 840, 220, 50), { fill: P.couch, lw: 8 });
+  for (const xx of [100, 860]) shape(rr(xx, 1150, 130, 330, 50), { fill: P.couchS, lw: 7 });
+  for (const xx of [320, 760]) shape(rect(xx, 1470, 24, 60), { fill: P.couchS, lw: 5 });
+}
+function uvWorld(t) {
+  bands(P.uv, -1400, 3400);
+  for (let i = 0; i < 40; i++) { const x = hash(i * 1.9) * 1400 - 160, y = hash(i * 4.3) * 2200 - 200, tw = .5 + .5 * Math.sin(on12(t) * 3 + i); dot(x, y, 3 + tw * 4, i % 4 ? P.gold : '#ffe9a8'); }
+}
+
+// ───────── adereços novos
+function bill(x, y, s, rot = 0) { push(); translate(x, y); rotate(rot); scale(s, s); shape(rr(-80, -40, 160, 80, 8), { fill: '#7fd38a', lw: 6 }); shape(ell(0, 0, 26, 26, 16), { fill: '#bdeec3', lw: 4 }); text('100', 0, 2, { font: '800 30px "Baloo 2"', fill: '#1d5c2c' }); pop(); }
+function pie(x, y, r, frac, t) {
+  push(); translate(x, y);
+  shape(ell(0, 0, r, r, 48), { fill: '#7fd38a', lw: 8 });
+  if (frac > 0) { const a0 = -Math.PI / 2, a1 = a0 + frac * TAU; shape([[0, 0], ...arc(0, 0, r, r, a0, a1, 24)], { fill: P.purple, lw: 7 }); }
+  pop();
+}
+function slot(x, y, s, t, { spin = 0, stop = 0, lever = 0, light = 0 } = {}) {
+  push(); translate(x, y); scale(s, s);
+  shape(rr(-230, -520, 460, 560, 40), { fill: P.red, lw: 8, shade: () => fillOnly(rect(120, -540, 140, 600), '#b82e26', { boil: .4 }) });
+  shape(rr(-200, -620, 400, 120, 30), { fill: P.gold, lw: 7 }); text('BET★', 0, -560, { font: '800 72px "Baloo 2"', fill: '#7a4e00' });
+  shape(rr(-190, -440, 380, 200, 18), { fill: '#2b2734', lw: 6 });
+  const SY = ['7', '$', '★', 'X', '♣'];
+  for (let i = 0; i < 3; i++) {
+    const cx = -125 + i * 125, rs = stop > i ? 0 : spin, k = Math.floor(on12(t) * 12 * rs + i * 2);
+    const scr = shape(rr(cx - 52, -425, 104, 170, 12), { fill: '#fffaf0', lw: 5 });
+    g.save(); g.clip(scr); text(stop > i ? ['X', '♣', 'X'][i] : SY[(k + 5) % 5], cx, -335, { font: '800 100px "Baloo 2"', fill: i === 1 ? P.purple : INK }); g.restore();
+  }
+  shape(rr(-90, -150, 180, 50, 20), { fill: '#2b2734', lw: 6 });
+  const la = lever * 1.1;
+  push(); translate(230, -330); rotate(la); shape(noodle([0, 0], [70, -200], 0, 22, 18), { fill: '#bfc4cf', lw: 6 }); shape(ell(70, -210, 40, 40, 18), { fill: P.red, lw: 6 }); pop();
+  if (light) for (let i = 0; i < 6; i++) dot(-190 + i * 76, -500, 10, Math.floor(t * 8 + i) % 2 ? P.gold : '#fff6c2');
+  pop();
+}
+function hook(x, y, s, t) {
+  push(); translate(x, y + Math.sin(t * 2.2) * 14); rotate(Math.sin(t * 1.7) * .06); scale(s, s);
+  stroke([[0, -1400], [0, 0]], 4);
+  stroke([[0, 0], [0, 90], [10, 130], [50, 140], [80, 115], [82, 85]], 10); stroke([[82, 85], [64, 104]], 8);
+  coin(42, 170, 60, t, t * 3);
+  pop();
+}
+function influ(x, y, s, t, o = {}) {   // influenciador: cabeça rosa, óculos escuros, ring light
+  const tt = on12(t);
+  push(); translate(x, y); scale(s, s);
+  shape(ell(0, -330, 170, 170, 40), { fill: null, lw: 26, line: '#fff3b0' }); shape(ell(0, -330, 170, 170, 40), { fill: null, lw: 6 });
+  shape(spline([[-80, -150], [80, -150], [100, 40], [-100, 40]]), { fill: '#24c4a0', lw: 7 });
+  shape(ell(0, -300, 92, 100, 30), { fill: '#ff9ec4', lw: 7 });
+  shape(spline([[-95, -330], [-40, -410], [40, -415], [95, -330], [60, -370], [0, -385], [-60, -370]]), { fill: '#ffd23a', lw: 6 });
+  shape(rr(-82, -330, 74, 44, 14), { fill: INK, lw: 5 }); shape(rr(8, -330, 74, 44, 14), { fill: INK, lw: 5 }); stroke([[-8, -312], [8, -312]], 5);
+  mouth(0, -250, 90, { o: .25 + .2 * Math.abs(Math.sin(tt * 9)), sm: 1 });
+  shape(noodle([80, -120], [150, -260 + Math.sin(tt * 8) * 10], 20, 26, 22), { fill: '#ff9ec4', lw: 6 });
+  phone(165, -300 + Math.sin(tt * 8) * 10, .55, t, { glow: 0, screenFn: () => text('%', 0, 0, { font: '800 120px "Baloo 2"', fill: P.red }) });
+  pop();
+}
+function tvGuy(x, y, s, t) {          // emissora/clube: cabeça de TV, camisa listrada
+  const tt = on12(t);
+  push(); translate(x, y); scale(s, s);
+  shape(spline([[-100, -230], [100, -230], [120, 40], [-120, 40]]), { fill: '#ffffff', lw: 7, shade: () => { for (let i = -2; i <= 2; i++) fillOnly(rect(i * 50 - 12, -240, 24, 300), P.red, { boil: .3 }); } });
+  text('BET★', 0, -120, { font: '800 52px "Baloo 2"', fill: INK, outlineW: 0 });
+  shape(rr(-130, -480, 260, 210, 24), { fill: '#5b5f6b', lw: 8 }); shape(rr(-105, -455, 210, 160, 14), { fill: '#bfefff', lw: 5 });
+  eye(-40, -380, 32, 36, { look: [.3, 0], lid: .3, skin: '#bfefff' }); eye(40, -380, 32, 36, { look: [.3, 0], lid: .3, skin: '#bfefff' });
+  mouth(0, -320, 80, { o: .2, sm: 1 }); stroke([[-40, -480], [-80, -560]], 5); stroke([[40, -480], [80, -560]], 5);
+  shape(noodle([110, -180], [200, -90], -10, 28, 24), { fill: '#ffffff', lw: 6 });
+  push(); translate(230, -80 + Math.sin(tt * 6) * 8); shape(ell(0, 0, 80, 70, 24), { fill: '#c9a26b', lw: 6 }); shape(rect(-30, -80, 60, 22), { fill: '#a07c48', lw: 5 }); text('$', 0, 8, { font: '800 80px "Baloo 2"', fill: '#5c3d10' }); pop();
+  pop();
+}
+function notice(x, y, s, rot = 0) { push(); translate(x, y); rotate(rot); scale(s, s); shape(rect(-110, -140, 220, 280), { fill: '#fffdf2', lw: 6 }); text('ALUGUEL', 0, -70, { font: '800 40px "Baloo 2"', fill: P.red }); text('ATRASADO', 0, -20, { font: '800 40px "Baloo 2"', fill: P.red }); for (let i = 0; i < 4; i++) stroke([[-80, 30 + i * 26], [80, 30 + i * 26]], 4); dot(0, -128, 9, P.red); pop(); }
+function bigPhone(t, screenFn, z = 3.4) { push(); translate(SW / 2, SH / 2 - 60); phone(0, 0, z, t, { glow: 0, screenFn }); pop(); }
+
+// ───────── plano a plano
+const cams = [];
+const shot = (t0, draw) => cams.push({ t0, draw });
+const cam = (cx, cy, z) => { translate(SW / 2, SH / 2); scale(z, z); translate(-cx, -cy); };
+const sg = (t, a, b) => clamp((t - a) / (b - a));
+
+// L01 · a pergunta
+shot(0, t => { push(); cam(540, 1000, lerp(1, 1.06, ss(sg(t, 0, L.L02.t0)))); room(t); tito(540, 1330, 1.5, t, { look: [0, .55], lid: .2, glow: clamp(t / .4) }); pop(); title(t, L.L01.t0 + .3, ['QUEM GANHA', 'COM AS BETS?'], 330); });
+// L02 · não é você
+shot(st('L02'), t => { push(); cam(540, 860, 2.0); room(t); const u = sg(t, L.L02.t0 + .4, L.L02.t1);
+  tito(540, 1330, 1.5, t, { look: [lerp(0, .2, u), lerp(.5, -.1, u)], lid: 0, pj: 6, jitter: 4, sweat: true, mo: .25 * u, sm: -.8, brow: 1 });
+  if (t > L.L02.t0 + .4) moth(620 + (t - L.L02.t0) * 120, 1045 - (t - L.L02.t0) * 240 + Math.sin(t * 9) * 18, 1.1, t); pop();
+  label(t, at('L02', 'nao'), 'NÃO É VOCÊ', 300, -3, P.red); });
+// L03 · Tito deposita 100 reais, todo animado
+shot(st('L03'), t => { push(); cam(540, 1000, 1.08); room(t); const d = at('L03', 'deposita'), p = sg(t, d, d + .7);
+  tito(540, 1330, 1.5, t, { look: [0, .5], lid: 0, sm: 1, mo: .3, glow: 0, brow: -1, screenFn: () => { text('R$', 0, -40, { font: '800 40px "Baloo 2"', fill: INK }); text(p > .9 ? '100' : '0', 0, 20, { font: '800 50px "Baloo 2"', fill: '#2e8b57' }); } });
+  if (p > 0 && p < 1) bill(lerp(250, 540, eio(p)), lerp(500, 1165, eio(p)) - Math.sin(p * Math.PI) * 150, lerp(1.4, .4, p), p * 6);
+  if (t > at('L03', 'animado')) for (let i = 0; i < 10; i++) { const a = i / 10 * TAU + t, r = 260 + 40 * Math.sin(t * 5 + i); dot(540 + Math.cos(a) * r, 760 + Math.sin(a) * r * .6, 9, i % 2 ? P.gold : P.shirt); }
+  pop(); label(t, d, 'DEPOSITA R$ 100', 280, -3, '#7fd38a'); });
+// L04 · a casa já começa na frente (insert no celular: a pizza com a fatia da casa)
+shot(st('L04'), t => { push(); room(t); pop(); T.reset(); fillOnly(rect(0, 0, SW, SH), 'rgba(40,30,20,.35)', { boil: 0 });
+  const m = at('L04', 'margem'); bigPhone(t, () => { pie(0, -10, 38, .18 * eo(sg(t, m - .2, m + .4)), t); text('CASA', 14, -46, { font: '800 14px "Baloo 2"', fill: P.purple }); });
+  label(t, st('L04') + .2, 'A CASA COMEÇA NA FRENTE', 270, 2);
+  if (t > m) label(t, m, 'MARGEM ESCONDIDA', 1500, -3, P.purple); });
+// L05 · a maquininha devolve menos
+shot(st('L05'), t => { push(); cam(540, 1000, 1); uvWorldBland(t); const sp0 = at('L05', 'maquininha'), m = at('L05', 'menos');
+  const lever = Math.sin(Math.PI * sg(t, sp0 - .4, sp0 + .1)); slot(540, 1500, 1.2, t, { spin: t > sp0 ? 1 : 0, stop: t > m ? 1 + Math.floor((t - m) / .2) : 0, lever, light: 1 });
+  for (let i = 0; i < 6; i++) { const c0 = sp0 + .2 + i * .28, p = (t - c0) / .5; if (p > 0 && p < 1) coin(lerp(120, 480, p), lerp(700, 1340, p) - Math.sin(p * Math.PI) * 200, 34, t, p * 9); }
+  if (t > m + .5) { const p = sg(t, m + .5, m + 1.1); coin(540, lerp(1400, 1620, eo(p)), 30, t, t * 5); }
+  pop(); label(t, st('L05') + .2, 'CASSINO ONLINE', 280, -2, P.gold); if (t > m) label(t, m, 'DEVOLVE MENOS', 1560, 3, P.red); });
+// L06 · ganhou uma vez? esse é o anzol
+shot(st('L06'), t => { push(); cam(540, 1000, 1.05); room(t); const gn = at('L06', 'ganhou'), an = at('L06', 'anz');
+  const jump = t < an ? Math.abs(Math.sin((t - gn) * 9)) * 60 * sg(t, gn, gn + .2) : 0;
+  tito(540, 1330 - jump, 1.5, t, { look: t > an ? [0, -.8] : [0, .2], lid: 0, sm: t > an ? -.5 : 1.2, mo: t > an ? .4 : .5, glow: 0, brow: -1, screenFn: () => text('GANHOU!', 0, 0, { font: '800 22px "Baloo 2"', fill: '#2e8b57' }) });
+  if (t > gn && t < an) for (let i = 0; i < 16; i++) { const u = (t - gn) * .8 + hash(i); dot(80 + hash(i * 3.1) * 920, (u % 1) * 1500 + 150, 10, [P.gold, P.red, '#7fd38a', '#ff9ec4'][i % 4]); }
+  if (t > an - .4) hook(560, lerp(-200, 520, eo(sg(t, an - .4, an + .2))), 1.6, t);
+  pop(); if (t > an) label(t, an, 'ESSE É O ANZOL!', 320, -4, P.red); });
+// L07 · o saldo vai descendo até zerar
+shot(st('L07'), t => { push(); room(t); pop(); T.reset(); fillOnly(rect(0, 0, SW, SH), 'rgba(40,30,20,.35)', { boil: 0 });
+  const p = sg(t, at('L07', 'saldo'), at('L07', 'zerar', 0, true));
+  bigPhone(t, () => { text('SALDO', 0, -62, { font: '800 16px "Baloo 2"', fill: INK });
+    const pts = []; const n = Math.max(2, Math.floor(p * 20)); for (let i = 0; i <= n; i++) { const u = i / 20; pts.push([-38 + u * 76, -40 + u * 90 + Math.sin(i * 2.1) * 8]); } stroke(pts, 4, { line: P.red });
+    text('R$ ' + Math.max(0, Math.round(100 * (1 - p))), 0, 70, { font: '800 24px "Baloo 2"', fill: p > .98 ? P.red : INK }); });
+  T.reset(); push(); translate(SW / 2 + 330, 1540); scale(.55); tito(0, 0, 1, t, { look: [-.5, -.3], lid: lerp(0, .5, p), sm: -1, mo: 0, glow: 0, sweat: true, pj: 4 * p, jitter: 3 * p, phone: false, brow: 1 }); pop();
+  if (p > .98) label(t, at('L07', 'zerar', 0, true) - .1, 'ZEROU', 300, -4, P.red); else label(t, st('L07') + .2, 'DESCENDO...', 300, 2); });
+// L08 · multiplica: 24 milhões
+shot(st('L08'), t => { const m = at('L08', 'multiplica'), z = lerp(1.0, .16, eio(sg(t, m, m + 2.6)));
+  push(); cam(540, 1000, z);
+  for (let gy = -4; gy <= 4; gy++) for (let gx = -4; gx <= 4; gx++) { if (z > .8 && (gx || gy)) continue; push(); translate(gx * 1150, gy * 2100); const big = z > .55, ch = big ? 2700 : 2060, cp = shape(big ? rect(-400, -400, 1900, 2900) : rect(-25, -280, 1130, ch), { stroke: false, boil: 0 }); g.save(); g.clip(cp); room(t); tito(540, 1330, 1.5, t + gx * .37 + gy * .21, { look: [0, .55], lid: .3, glow: 1 }); g.restore(); if (z <= .55) shape(rect(-25, -280, 1130, 2060), { lw: 10, boil: .5 }); pop(); }
+  pop(); const n = at('L08', '24'); if (t > n) label(t, n, '24 MILHÕES', 860, -3, P.gold);
+  if (t > at('L08', 'banco')) label(t, at('L08', 'banco'), 'FONTE: BANCO CENTRAL', 280, 0, '#ffffff');
+  if (t > at('L08', '2024')) label(t, at('L08', '2024'), 'DE APOSTADORES EM 2024', 1000, 2, '#ffffff'); });
+// L09 · pra onde vai o dinheiro? (moedas saem de todos os celulares rumo ao portal)
+shot(st('L09'), t => { push(); cam(540, 1000, .9); room(t); tito(540, 1330, 1.5, t, { look: [0, -.6], lid: 0, mo: .4, sm: 0, glow: 1 });
+  for (let i = 0; i < 12; i++) { const c0 = L.L09.t0 + i * .3, p = (t - c0) / 1.2; if (p > 0 && p < 1) coin(540 + Math.sin(i * 2.3) * 200 * p, lerp(1150, -100, eio(p)), 34, t, p * 12); }
+  pop(); const rush = eio(sg(t, K.w1 - .5, K.w1)); if (rush > 0) { T.reset(); portal(540, 1160, 60 + rush * 1600, t * 2, { open: 1 }); }
+  label(t, at('L09', 'pra'), 'PRA ONDE VAI O DINHEIRO?', 300, -2, '#ffffff'); });
+// L10 · o dono da casa
+shot(K.w1, t => { push(); cam(540, 960, lerp(1.12, 1.0, eo(sg(t, K.w1, K.w1 + .8)))); uvWorld(t); coinHill(540, 1900, 1500, 620, t); throne(540, 1420, 1.25);
+  const dn = at('L10', 'dono'); dono(540, 1380, 1.25, t, { laugh: t > dn ? 1 : .3, look: [0, .2] }); pop(); if (t > dn - .1) label(t, dn - .1, 'O DONO DA CASA', 290, -4, P.gold); });
+// L11 · cada aposta perdida sobe pro topo
+const COINS = Array.from({ length: 10 }, (_, i) => L.L11.t0 + .1 + i * .25);
+shot(st('L11'), t => { push(); const u = eio(sg(t, L.L11.t0, L.L11.t1)); cam(540, lerp(1500, 1000, u), .62);
+  uvWorld(t); fillOnly(rect(-600, 2060, 2300, 1200), P.goldS, { boil: .3 }); coinHill(540, 2050, 1700, 1250, t); throne(540, 880, .7); dono(540, 850, .7, t, { laugh: .6 });
+  portal(300, 2050, 150, t, { open: back(sg(t, L.L11.t0 - .1, L.L11.t0 + .3), 1.2), sx: 1.6 });
+  for (const c0 of COINS) { const p = (t - c0) / 1.0; if (p < 0 || p > 1) continue; const e = eio(p); coin(lerp(300, 540 + Math.sin(c0 * 7) * 120, e), lerp(2000, 760, e) - Math.sin(p * Math.PI) * 160, 40, t, p * 12); }
+  pop(); label(t, L.L11.t0, 'CADA APOSTA PERDIDA', 260, 3); if (t > at('L11', 'topo')) label(t, at('L11', 'topo'), '↑ SOBE PRO TOPO', 400, -3, P.gold); });
+// L12 · influenciadores: comissão quando os seguidores perdem
+shot(st('L12'), t => { push(); cam(540, 1000, 1); uvWorld(t); fillOnly(rect(-600, 1500, 2300, 900), P.goldS, { boil: .3 }); coinHill(540, 1600, 1500, 380, t);
+  const inf = at('L12', 'influenciadores'); if (t > inf - .3) influ(540, 1500, 1.5 * back(sg(t, inf - .3, inf + .1), 1.6), t);
+  else dono(540, 1500, 1.1, t, { laugh: .5, look: [-.6, 0] });
+  const pd = at('L12', 'perdem'); for (let i = 0; i < 8; i++) { const c0 = pd + i * .15, p = (t - c0) / .7; if (p > 0 && p < 1) coin(lerp(-50, 760, p), lerp(1300, 1050, p) - Math.sin(p * Math.PI) * 120, 30, t, p * 9); }
+  pop(); if (t > inf) label(t, inf, 'INFLUENCIADORES', 280, -3, '#ff9ec4'); if (t > at('L12', 'comissao')) label(t, at('L12', 'comissao'), 'COMISSÃO SOBRE PERDAS', 1580, 2, '#ffffff'); });
+// L13 · clubes e emissoras: patrocínio
+shot(st('L13'), t => { push(); cam(540, 1000, 1); uvWorld(t); fillOnly(rect(-600, 1500, 2300, 900), P.goldS, { boil: .3 }); coinHill(540, 1600, 1500, 380, t);
+  tvGuy(470, 1480, 1.6 * back(sg(t, L.L13.t0 - .2, L.L13.t0 + .2), 1.6), t); pop();
+  label(t, L.L13.t0, 'CLUBES E EMISSORAS', 280, 3, '#ffffff'); if (t > at('L13', 'patrocinio')) label(t, at('L13', 'patrocinio'), 'MILHÕES EM PATROCÍNIO', 1580, -2, P.gold); });
+// L14 · o rico fica cada vez mais rico
+shot(st('L14'), t => { push(); cam(540, 1060, 1.25); uvWorld(t); coinHill(540, 1900, 1500, 620, t); throne(540, 1420, 1.25);
+  const r1 = at('L14', 'rico'), r2 = at('L14', 'rico', 1), i1 = sg(t, r1, r1 + .35), i2 = sg(t, r2, r2 + .35), sq = (u, t0) => u > 0 ? .07 * Math.exp(-(t - t0) * 6) * Math.cos((t - t0) * 22) : 0;
+  dono(540, 1380, 1.25, t, { inf: 1 + .16 * back(i1, 2.5) + .2 * back(i2, 2.5) + sq(i1, r1) + sq(i2, r2), laugh: 1 });
+  for (let i = 0; i < 16; i++) { const c0 = L.L14.t0 + hash(i) * 3, p = (t - c0) / 1.1; if (p < 0 || p > 1) continue; coin(80 + hash(i * 2.3) * 920, lerp(250, 1700, p * p), 34, t, p * 10 + i); }
+  pop(); if (t > r2 - .1) label(t, r2 - .1, 'CADA VEZ MAIS RICO', 270, -3, P.gold); if (t > at('L14', 'menos')) label(t, at('L14', 'menos'), 'COM O DINHEIRO DE QUEM TEM MENOS', 1560, 2, '#ffffff'); });
+// L15 · lá embaixo: falta pro aluguel, falta pro mercado
+shot(K.w2, t => { push(); cam(560, 1080, lerp(1.05, .98, ss(sg(t, K.w2, L.L16.t0)))); room(t, { fridgeOpen: eo(sg(t, at('L15', 'mercado') - .3, at('L15', 'mercado') + .1)) });
+  moth(880 + Math.sin(t * 3) * 60, 1180 + Math.cos(t * 4) * 30, .9, t);
+  const al = at('L15', 'aluguel'); if (t > al - .2) notice(300, 560 + (1 - back(sg(t, al - .2, al + .15), 2)) * -400, 1.1, -.08);
+  tito(500, 1330, 1.4, t, { look: [.7, .1], lid: .5, glow: 0, sm: -1, brow: -.5, handPos: [0, -60] }); pop();
+  if (t > al) label(t, al, 'FALTA PRO ALUGUEL', 300, 3); if (t > at('L15', 'mercado')) label(t, at('L15', 'mercado'), 'FALTA PRO MERCADO', 420, -3, P.red); });
+// L16 · bônus grátis? a casa sempre ganha
+shot(st('L16'), t => { push(); cam(560, 1080, 1.0); room(t, { fridgeOpen: 1 });
+  const bn = at('L16', 'bonus'); tito(500, 1330, 1.4, t, { look: [0, .55], lid: .3, sm: -.6, glow: 0, screenFn: () => { fillOnly(rr(-44, -50, 88, 60, 10), P.gold, { boil: .2 }); text('BÔNUS', 0, -32, { font: '800 18px "Baloo 2"', fill: INK }); text('GRÁTIS!', 0, -8, { font: '800 18px "Baloo 2"', fill: P.red }); } });
+  if (t > bn) hook(500 + 80, lerp(-300, 380, eo(sg(t, bn, bn + .5))), 1.2, t);
+  pop(); title(t, at('L16', 'casa'), ['A CASA', 'SEMPRE GANHA'], 330, P.red); });
+// L17 · procure ajuda
+shot(st('L17'), t => { push(); cam(560, 1080, lerp(1.0, 1.05, ss(sg(t, L.L17.t0, DUR)))); room(t, { fridgeOpen: 1 });
+  const glow = 0; tito(500, 1330, 1.4, t, { look: t > K.close ? [0, -.2] : [.4, -.5], lid: .25, sm: t > K.close ? .3 : -.2, glow, phone: t < at('L17', 'procura') });
+  pop();
+  const pc = at('L17', 'procura'); if (t > pc - .2) { const s = back(sg(t, pc - .2, pc + .2), 2); T.reset(); translate(SW / 2, 430); scale(s, s);
+    shape(rr(-420, -260, 840, 520, 40), { fill: '#fffdf2', lw: 9 }); text('PRECISA DE AJUDA?', 0, -150, { font: '64px "Lilita One"', fill: INK });
+    text('CVV · 188', 0, 0, { font: '150px "Lilita One"', fill: P.red, outlineW: 14, outlineCol: INK }); text('ligação gratuita · 24 horas', 0, 150, { font: '800 46px "Baloo 2"', fill: INK }); }
+});
+function uvWorldBland(t) { bands(['#3a2f4f', '#433659', '#4d3e63'], -800, 2600); for (let i = 0; i < 20; i++) dot(hash(i * 5.1) * 1080, hash(i * 2.7) * 1200, 4, P.gold); }
+
+// ───────── títulos (pop em degraus de 12 qps) e etiquetas
+function seg(t, a, b) { return clamp((t - a) / (b - a)); }
+function title(t, t0, lines, y, col = '#ffd23a') {
+  if (t < t0) return;
+  lines.forEach((L, i) => { const u = on12(t - t0 - i * .18); if (u < 0) return; const s = back(clamp(u / .33), 2.4);
+    T.reset(); translate(SW / 2, y + i * 150); rotate((i ? 2.5 : -2.5) * Math.PI / 180); scale(s, s);
+    text(L, 8, 10, { font: '138px "Lilita One"', fill: INK, outlineW: 26, outlineCol: INK });
+    text(L, 0, 0, { font: '138px "Lilita One"', fill: col, outlineW: 18, outlineCol: INK }); });
+}
+function label(t, t0, str, y, rotDeg = 0, col = '#ffffff') {
+  const u = on12(t - t0); if (u < 0) return; const s = back(clamp(u / .3), 2.2);
+  g.font = '96px "Lilita One"'; const fit = Math.min(1, 960 / (g.measureText(str).width + 30));
+  T.reset(); translate(SW / 2, y); rotate(rotDeg * Math.PI / 180); scale(s * fit, s * fit);
+  text(str, 0, 0, { font: '96px "Lilita One"', fill: col, outlineW: 20, outlineCol: INK });
+}
+
+// ───────── portal-wipe (giro ciano cobrindo a tela)
+const WIPES = [K.w1, K.w2];
+function wipe(t) {
+  for (const c of WIPES) { const p = (t - (c - .22)) / .44; if (p <= 0 || p >= 1) continue;
+    const cover = Math.sin(Math.PI * p); T.reset(); portal(SW / 2, SH / 2, 1300 * cover + 10, t * 2.5, { open: 1 }); }
+}
+
+// ───────── legendas
+const subs = [];
+for (const l of LINES) { const W_ = L[l.id].w, t0 = L[l.id].t0; let cur = [];
+  // texto do roteiro (não o do Whisper), distribuído pelas palavras ouvidas
+  const sw = l.text.split(' '), k = W_.length / sw.length;
+  sw.forEach((w, i) => { cur.push(i); const txt = cur.map(j => sw[j]).join(' ');
+    if (i === sw.length - 1 || /[.?!:]$/.test(w) || (/,$/.test(w) && txt.length > 9) || txt.length > 22) {
+      const a = W_[Math.min(W_.length - 1, Math.floor(cur[0] * k))], b = W_[Math.min(W_.length - 1, Math.floor(i * k + k - 1e-6))];
+      subs.push({ t0: t0 + a[1] - .05, t1: t0 + b[2] + .3, text: txt }); cur = []; } }); }
+for (let i = 0; i < subs.length - 1; i++) subs[i].t1 = Math.min(Math.max(subs[i].t1, subs[i].t0 + 1.0), subs[i + 1].t0 - .03);
+window.SUBS = subs;
+function subtitle(t) {
+  const s = subs.find(s => t >= s.t0 && t < s.t1); if (!s) return;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.font = '800 60px "Baloo 2"'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  const y = 1745; g.lineJoin = 'round'; g.lineWidth = 13; g.strokeStyle = INK; g.strokeText(s.text, SW / 2, y); g.fillStyle = '#fff'; g.fillText(s.text, SW / 2, y);
+  const w = g.measureText(s.text).width; T.reset(); shape(rr(SW / 2 - w / 2 - 20, y - 105, 200, 44, 22), { fill: '#ffd23a', lw: 5 });
+  g.setTransform(1, 0, 0, 1, 0, 0); g.font = '800 26px "Baloo 2"'; g.fillStyle = INK; g.textAlign = 'left'; g.fillText('NARRADOR', SW / 2 - w / 2 + 2, y - 82);
+}
+function render(t) {
+  T.frame(t); g.fillStyle = '#000'; g.fillRect(0, 0, SW, SH);
+  let k = 0; for (let i = 0; i < cams.length; i++) if (t >= cams[i].t0) k = i;
+  cams[k].draw(t); T.reset(); wipe(t); subtitle(t);
+  if (t > DUR - .6) { g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = clamp((t - DUR + .6) / .5); g.fillStyle = INK; g.fillRect(0, 0, SW, SH); g.globalAlpha = 1; }
+}
+// ───────── eventos de som
+const EV = []; const ev = (t, type, o = {}) => EV.push({ t: +t.toFixed(3), type, ...o });
+for (const l of LINES) ev(L[l.id].t0, 'vo', { id: l.id });
+ev(.05, 'portalOpen', { v: .35 }); ev(L.L01.t0 + .3, 'pop'); ev(L.L01.t0 + .48, 'pop');
+cams.forEach((c, i) => { if (i && ![K.w1, K.w2].includes(c.t0)) ev(c.t0, 'cut'); });
+ev(at('L02', 'nao'), 'pop'); ev(L.L02.t0 + .4, 'flutter', { d: 1.4 }); ev(L.L02.t0, 'sweat');
+const dp = at('L03', 'deposita'); ev(dp, 'whoosh'); ev(dp + .7, 'kaching'); ev(dp, 'pop');
+ev(st('L04') + .2, 'pop'); ev(at('L04', 'margem'), 'slice'); ev(at('L04', 'margem'), 'pop');
+const mq = at('L05', 'maquininha'); ev(st('L05') + .2, 'pop'); ev(mq - .4, 'lever'); ev(mq, 'reels', { d: at('L05', 'menos') - mq + .5 }); for (let i = 0; i < 6; i++) ev(mq + .2 + i * .28 + .5, 'clink', { v: .5 }); [0, 1, 2].forEach(i => ev(at('L05', 'menos') + i * .2, 'reelstop')); ev(at('L05', 'menos'), 'buzzer'); ev(at('L05', 'menos') + 1.1, 'clink');
+ev(at('L06', 'ganhou'), 'jackpot'); ev(at('L06', 'anz') - .4, 'whoosh'); ev(at('L06', 'anz') + .2, 'boing'); ev(at('L06', 'anz'), 'pop');
+ev(at('L07', 'saldo'), 'descend', { d: at('L07', 'zerar', 0, true) - at('L07', 'saldo') }); ev(at('L07', 'zerar', 0, true), 'buzzer');
+ev(at('L08', 'multiplica'), 'whoosh'); ev(at('L08', '24'), 'pop'); ev(at('L08', 'banco'), 'pop'); ev(at('L08', '2024'), 'pop');
+for (let i = 0; i < 12; i++) ev(L.L09.t0 + i * .3, 'spit'); ev(K.w1 - .5, 'swirl'); ev(K.w1, 'portalOpen', { v: 1 }); ev(K.w2 - .3, 'swirl'); ev(K.w2, 'portalOpen', { v: .8 });
+ev(at('L10', 'dono'), 'boing'); ev(at('L10', 'dono') - .1, 'pop');
+COINS.forEach(c => { ev(c, 'spit'); ev(c + 1, 'clink'); }); ev(L.L11.t0, 'pop'); ev(at('L11', 'topo'), 'pop');
+ev(at('L12', 'influenciadores') - .3, 'boing'); ev(at('L12', 'influenciadores'), 'pop'); ev(at('L12', 'comissao'), 'pop'); for (let i = 0; i < 8; i++) ev(at('L12', 'perdem') + i * .15 + .7, 'clink', { v: .4 });
+ev(L.L13.t0 - .2, 'boing'); ev(L.L13.t0, 'pop'); ev(at('L13', 'patrocinio'), 'kaching');
+ev(at('L14', 'rico'), 'inflate'); ev(at('L14', 'rico', 1), 'inflate', { big: 1 }); for (let i = 0; i < 16; i++) ev(L.L14.t0 + hash(i) * 3 + 1.0, 'clink', { v: .3 });
+ev(at('L15', 'aluguel') - .2, 'paper'); ev(at('L15', 'aluguel'), 'pop'); ev(at('L15', 'mercado') - .3, 'fridge'); ev(at('L15', 'mercado'), 'pop'); ev(K.w2 + .2, 'flutter', { d: 4 }); ev(K.w2, 'humOn', { d: DUR - K.w2 });
+ev(at('L16', 'bonus'), 'ding'); ev(at('L16', 'bonus') + .4, 'boing'); ev(at('L16', 'casa'), 'pop'); ev(at('L16', 'casa') + .18, 'pop', { big: 1 });
+ev(at('L17', 'procura') - .2, 'boing'); ev(at('L17', 'procura') - .25, 'fwump');
+EV.sort((a, b) => a.t - b.t);
+window.DUR = DUR; window.EV = EV; window.render = render; window.L = L;
+render(0); window.READY = true;
+</script></body></html>
